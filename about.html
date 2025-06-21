@@ -1,0 +1,547 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="About Latesh Patil, Cloud & DevOps Engineer with expertise in Linux, AWS, Kubernetes, and Infrastructure as Code.">
+  <meta name="keywords" content="Cloud Engineer, DevOps, Linux, AWS, Kubernetes, Terraform, Docker">
+  <meta name="author" content="Latesh Patil">
+  <title>About | Latesh Patil</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    .brush-stroke { background: url('https://via.placeholder.com/200x200.png?text=Brush+Stroke') no-repeat center; background-size: cover; }
+    .card-hover:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
+    .smooth-scroll { scroll-behavior: smooth; }
+    .active-nav { @apply text-blue-500 border-b-2 border-blue-500; }
+    .docker-hover:hover { background: linear-gradient(135deg, #0db7ed, #ffffff); }
+    .k8s-hover:hover { background: linear-gradient(135deg, #326ce5, #ffffff); }
+    .linux-hover:hover { background: linear-gradient(135deg, #f5c518, #ffffff); }
+    .timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: #e5e7eb; transform: translateX(-50%); }
+    .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="text-2xl font-bold">Latesh Patil</a>
+      <div class="space-x-4">
+        <a href="./index.html" class="hover:text-blue-500">Home</a>
+        <a href="./about.html" class="hover:text-blue-500 active-nav">About</a>
+        <a href="./projects.html" class="hover:text-blue-500">Projects</a>
+        <a href="./blog.html" class="hover:text-blue-500">Blog</a>
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+          <span x-show="!darkMode">🌙</span>
+          <span x-show="darkMode">☀️</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- About Section -->
+  <section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">About Me</h2>
+      <div class="relative timeline">
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">Cloud & DevOps Engineer at TechCorp</h3>
+            <p class="text-gray-600 dark:text-gray-400">2023 - Present</p>
+            <p>Designed AWS EKS clusters and automated CI/CD pipelines with GitHub Actions.</p>
+          </div>
+          <div class="md:w-1/2"></div>
+        </div>
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2"></div>
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">AWS Certified DevOps Engineer</h3>
+            <p class="text-gray-600 dark:text-gray-400">2022</p>
+            <p>Earned certification in AWS DevOps tools and practices.</p>
+          </div>
+        </div>
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">Linux Administrator at SysAdmin Ltd</h3>
+            <p class="text-gray-600 dark:text-gray-400">2020 - 2023</p>
+            <p>Managed Linux servers, implemented CIS benchmarks, and wrote Bash scripts.</p>
+          </div>
+          <div class="md:w"></div>
+        </div>
+      </div>
+      <h2 class="text-3xl font-bold mb-12">Skills</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Cloud</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded docker-hover">AWS</span>
+            <span class="text-white px-2 py-1 bg-blue rounded-500</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">GCP</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Azure</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100:bg-gray-700 dark rounded-lg">card-shadow">
+          <h3 class="mb-2xl font-semibold text">Linux</h3>
+          <div class="gap-2 flex flex-wrap">
+            <span class="px-2 py-1 bg-yellow-500 text-white linux-hover rounded">Python</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">SELinux</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">SystemD</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Containers</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Docker</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
+            <span class="px-2 px-1 bg-blue-600 text-white rounded">Podman</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:latesh.cloud.devops@example.com" class="underline">latesh.cloud.devops@example.com</a></p>
+      <div class="mt-4 space-x-4
+        <a href="https://github.com/lateshpatil" class="hover:text-blue-400">GitHub</a>
+        <a href="https://linkedin.com/in/lateshpatil" class="hover:text-blue-400">LinkedIn</a>
+        <a href="mailto:latesh.cloud.devops@example.com" class="hover:text-blue-400">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) => {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    document.querySelectorAll('nav a').forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active-nav');
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+##### New `projects.html`
+This page showcases a grid of projects with cards, tags, and GitHub links.
+<xaiArtifact artifact_id="bdc14938-2f9f-4a24-9e76-606af0590301" artifact_version_id="91a45f56-9ad1-4d96-98a0-1cba22a9399e" title="projects.html" contentType="text/html">
+```html
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode' }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Projects by Latesh Patil, showcasing Cloud & DevOps solutions with AWS, Kubernetes, Terraform, and more.">
+  <meta name="keywords" content="Cloud Engineer, DevOps, AWS, Kubernetes, Docker, Terraform, Projects">
+  <meta name="author" content="Latesh Patil">
+  <title>Projects | Latesh Patil</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    .brush-stroke { background: url('https://via.placeholder.com/200x200.png?text=Brush+Stroke') no-repeat center; background-size: cover; }
+    .card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+    .smooth-scroll { scroll-behavior: smooth; }
+    .active-nav { @apply text-blue-500 border-b-2 border-blue-500; }
+    .docker:hover { background: linear-gradient(135deg, #0db7ed, #ffffff)); }
+    .k8s:hover: { background: linear-gradient(135deg, #326ce5, #ffffff)); }
+    .linux:hover { background: linear-gradient(135deg, #f5c518, #ffffff)); }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="text-2xl font-bold">Litesh Patil</a>
+      <div class="space-x-4">
+        <a href="./index.html" class="hover:text-blue-500">Home</a>
+        <a href="./about.html" class="hover:text-blue-500">About</a>
+        <a href="./projects.html" class="hover:text-blue-500 active-nav">Projects</a>
+        <a href="./blog.html" class="hover:text-blue-500">Blog</a>
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+          <span x-show="!darkMode">🌑</span>
+          <span x-show="darkMode">☀️</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Projects Section -->
+  <section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">My Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover k8s-hover">
+          <h3 class="text-xl font-semibold mb-2">AWS EKS Setup with Terraform</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Deployed a scalable Kubernetes cluster on AWS using Terraform and GitHub Actions.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">AWS</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Terraform</span>
+          </div>
+          <a href="https://github.com/lateshpatil/eks-terraform" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Centralized Logging with ELK Stack</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Implemented ELK stack for centralized logging and monitoring of Linux servers.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Elasticsearch</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Kibana</span>
+          </div>
+          <a href="https://github.com/lateshpatil/elk-stack" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover linux-hover">
+          <h3 class="text-xl font-semibold mb-2">Bash Scripts for Automation</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Developed Bash scripts to audit users and permissions on Linux systems.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Bash</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">Linux</span>
+          </div>
+          <a href="https://github.com/lateshpatil/bash-audit" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Ansible Playbooks for Linux Hardening</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Created Ansible playbooks to enforce CIS benchmarks on Ubuntu servers.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Ansible</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+            <span class="px-2 py-1 bg-gray-600 text-white rounded">Security</span>
+          </div>
+          <a href="https://github.com/lateshpatil/ansible-hardening" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:latesh.cloud.devops@example.com" class="underline">litesh.cloud.devops@example.com</a></p>
+      <div class="mt-4 space-x-4">
+        <a href="https://github.com/lateshpatil" class="hover:text-blue-400">GitHub</a>
+        <a href="https://linkedin.com/in/lateshpatil" class="hover:text-blue-400">LinkedIn</a>
+        <a href="mailto:latesh.cloud.devops@example.com" class="hover:text-blue-400">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) => {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    document.querySelectorAll('nav a').forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active-nav');
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+##### New `blog.html` (Static Version)
+To avoid backend dependency for GitHub Pages, this blog uses static content with sample posts. If you prefer the backend, see the deployment instructions below.
+
+<xaiArtifact artifact_id="fe9c842f-9e6b-4ffd-8f49-dc452f451cf7" artifact_version_id="5a2a1cfb-9487-496a-8514-67ad108b2f48" title="blog.html" contentType="text/html">
+```html
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Blog by Latesh Patil on Cloud, DevOps, Linux, and automation topics.">
+  <meta name="keywords" content="Cloud, DevOps, Linux, AWS, Ansible, Kubernetes, Blog">
+  <meta name="author" content="Latesh Patil">
+  <title>Blog | Latesh Patil</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    .brush-stroke { background: url('https://via.placeholder.com/200x200.png?text=Brush+Stroke') no-repeat center; background-size: cover; }
+    .card-hover:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
+    .smooth-scroll { scroll-behavior: smooth; }
+    .active-nav { @apply text-blue-500 border-b-2 border-blue-500; }
+    .docker-hover:hover { background: linear-gradient(135deg, #0db7ed, #ffffff); }
+    .k8s-hover:hover { background: linear-gradient(135deg, #326ce5, #ffffff); }
+    .linux-hover:hover { background: linear-gradient(135deg, #f5c518, #ffffff); }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="text-2xl font-bold">Latesh Patil</a>
+      <div class="space-x-4">
+        <a href="./index.html" class="hover:text-blue-500">Home</a>
+        <a href="./about.html" class="hover:text-blue-500">About</a>
+        <a href="./projects.html" class="hover:text-blue-500">Projects</a>
+        <a href="./blog.html" class="hover:text-blue-500 active-nav">Blog</a>
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+          <span x-show="!darkMode">🌑</span>
+          <span x-show="darkMode">☀️</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Section -->
+  <section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">Blog</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="blog-posts">
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover linux-hover">
+          <h3 class="text-xl font-semibold mb-2">How to Automate Linux Patching</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">June 1, 2025</p>
+          <p>Learn how to use Ansible and cron to automate Linux patching for Ubuntu servers.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Ansible</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Hardening Ubuntu with CIS Level 1 Benchmark</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">June 10, 2025</p>
+          <p>Step-by-step guide to secure Ubuntu servers using CIS benchmarks.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Security</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Monitoring EC2 with CloudWatch + Prometheus</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-2">June 15, 2025</p>
+          <p>Setup monitoring for AWS EC2 instances using CloudWatch and Prometheus.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">AWS</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Prometheus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:latesh.cloud.devops@example.com" class="underline">latesh.cloud.devops@example.com</a></p>
+      <div class="mt-4 space-x-4">
+        <a href="https://github.com/lateshpatil" class="hover:text-blue-400">GitHub</a>
+        <a href="https://linkedin.com/in/lateshpatil" class="hover:text-blue-400">LinkedIn</a>
+        <a href="mailto:latesh.cloud.devops@example.com" class="hover:text-blue-400">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    document.querySelectorAll('nav a').forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active-nav');
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+#### 2. Set Up Your GitHub Repository
+1. **Create a Repository**:
+   - Go to GitHub and create a new repository:
+     - For a user site: Name it `username.github.io` (replace `username` with your GitHub username).
+     - For a project site: Name it something like `portfolio`.
+   - Clone the repository locally: `git clone https://github.com/username/repository.git`.
+
+2. **Add Files**:
+   - Save `index.html`, `about.html`, `projects.html`, and `blog.html` in the repository’s root directory.
+   - If you have a custom portrait image, add it to an `/assets` folder and update the image path in `index.html`:
+     ```html
+     <img src="./assets/your-portrait.jpg" alt="Latesh Patil" class="w-full h-full object-cover">
+     ```
+
+3. **Commit and Push**:
+   - Run the following commands in your local repository:
+     ```bash
+     git add .
+     git commit -m "Add portfolio website files"
+     git push origin main
+     ```
+
+#### 3. Enable GitHub Pages
+1. Go to your repository on GitHub → **Settings** → **Pages**.
+2. Under **Source**, select:
+   - **Branch**: `main` (or your default branch).
+   - **Folder**: `/ (root)`.
+3. Click **Save**.
+4. Wait a few minutes for deployment. Check the URL provided (e.g., `https://username.github.io` or `https://username.github.io/portfolio`).
+
+#### 4. Test Navigation
+- Visit your GitHub Pages URL (e.g., `https://username.github.io/portfolio/index.html`).
+- Click on **About**, **Projects**, and **Blog** links to ensure they load correctly.
+- If you see blank pages, open the browser’s Developer Tools (F12 → Console) and check for errors (e.g., `404 Not Found`).
+
+#### 5. Fix Blank Page Issues
+If navigation still results in blank pages, try these fixes:
+1. **Verify File Existence**:
+   - Ensure `about.html`, `projects.html`, and `blog.html` are in the repository’s root directory and pushed to GitHub.
+   - Check the GitHub repository’s file list online.
+
+2. **Update Navbar Links**:
+   - If using a project repository (`username.github.io/portfolio`), update navbar links in all files to:
+     ```html
+     <a href="/portfolio/index.html" class="hover:text-blue-500">Home</a>
+     <a href="/portfolio/about.html" class="hover:text-blue-500">About</a>
+     <a href="/portfolio/projects.html" class="hover:text-blue-500">Projects</a>
+     <a href="/portfolio/blog.html" class="hover:text-blue-500">Blog</a>
+     ```
+   - For a user repository (`username.github.io`), use:
+     ```html
+     <a href="/index.html" class="hover:text-blue-500">Home</a>
+     <a href="/about.html" class="hover:text-blue-500">About</a>
+     <a href="/projects.html" class="hover:text-blue-500">Projects</a>
+     <a href="/blog.html" class="hover:text-blue-500">Blog</a>
+     ```
+   - Commit and push changes.
+
+3. **Check for Resource Errors**:
+   - Ensure TailwindCSS and Alpine.js CDNs are accessible. If they fail, download them locally:
+     - Save `tailwind.min.css` and `alpine.min.js` in `/assets`.
+     - Update all HTML files:
+       ```html
+       <link href="./assets/tailwind.min.css" rel="stylesheet">
+       <script src="./assets/alpine.min.js" defer></script>
+       ```
+
+4. **Clear Cache**:
+   - Clear your browser cache or test in an incognito window.
+   - Redeploy by making a small change (e.g., add a comment to `index.html`) and pushing.
+
+#### 6. Handle the Backend (Optional)
+Since GitHub Pages doesn’t support Node.js, the blog backend (`server.js`) must be hosted elsewhere. Alternatively, the static `blog.html` above eliminates the need for a backend. If you want the dynamic blog:
+
+1. **Deploy Backend to Render**:
+   - Create a new repository for the backend (e.g., `portfolio-backend`).
+   - Add `server.js` and a `package.json`:
+     ```json
+     {
+       "name": "portfolio-backend",
+       "version": "1.0.0",
+       "scripts": { "start": "node server.js" },
+       "dependencies": { "express": "^4.18.2", "cors": "^2.8.5" }
+     }
+     ```
+   - Install dependencies: `npm install`.
+   - Push to GitHub.
+   - On Render:
+     - Create a new Web Service, link the backend repo.
+     - Set the start command: `node server.js`.
+     - Note the URL (e.g., `https://portfolio-backend.onrender.com`).
+
+2. **Update `blog.html` for Backend**:
+   - Replace the static blog section with a dynamic fetch:
+     ```html
+     <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="blog-posts"></div>
+     <script>
+       async function fetchPosts() {
+         try {
+           const response = await fetch('https://portfolio-backend.onrender.com/api/posts');
+           const posts = await response.json();
+           const container = document.getElementById('blog-posts');
+           posts.forEach(post => {
+             container.innerHTML += `
+               <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+                 <h3 class="text-xl font-semibold mb-2">${post.title}</h3>
+                 <p class="text-gray-600 dark:text-gray-400 mb-2">${post.date}</p>
+                 <p>${post.content.substring(0, 100)}...</p>
+                 <div class="flex flex-wrap gap-2 mt-4">
+                   ${post.tags.map(tag => `<span class="px-2 py-1 bg-blue-500 text-white rounded">${tag}</span>`).join('')}
+                 </div>
+               </div>
+             `;
+           });
+         } catch (error) {
+           console.error('Failed to fetch posts:', error);
+           document.getElementById('blog-posts').innerHTML = '<p>Unable to load blog posts.</p>';
+         }
+       }
+       fetchPosts();
+     </script>
+     ```
+   - Save as `blog.html`, commit, and push.
+
+3. **Use Static Blog (Recommended for Simplicity)**:
+   - Stick with the provided `blog.html` to avoid backend setup.
+
+#### 7. Final Verification
+- Visit your GitHub Pages URL (e.g., `https://username.github.io/portfolio`).
+- Test all navigation links.
+- Check the browser console (F12 → Console) for errors if any page is blank.
+- Update your portrait image, GitHub, and LinkedIn URLs in all files.
+
+### Troubleshooting
+If blank pages persist:
+- **Share the GitHub repository URL** so I can check the structure.
+- **Share console errors** from the browser (F12 → Console).
+- Confirm whether you’re using a user (`username.github.io`) or project repository.
+- Let me know if you want the dynamic blog with a backend or prefer the static version.
+
+### Notes
+- The static `blog.html` eliminates backend complexity, making deployment easier.
+- Replace placeholder image URLs and social links with your own.
+- If you need the backend, I can provide detailed Render/Heroku setup instructions.
+
+Your portfolio should now deploy successfully on GitHub Pages with all pages accessible. Let me know if you need further assistance or additional files!

@@ -1,0 +1,154 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Projects by Latesh Patil, showcasing Cloud & DevOps solutions with AWS, Kubernetes, Terraform, and more.">
+  <meta name="keywords" content="Cloud Engineer, DevOps, AWS, Kubernetes, Docker, Terraform, Projects">
+  <meta name="author" content="Latesh Patil">
+  <title>Projects | Latesh Patil</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    .brush-stroke { background: url('https://via.placeholder.com/200x200.png?text=Brush+Stroke') no-repeat center; background-size: cover; }
+    .card-hover:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
+    .smooth-scroll { scroll-behavior: smooth; }
+    .active-nav { @apply text-blue-500 border-b-2 border-blue-500; }
+    .docker-hover:hover { background: linear-gradient(135deg, #0db7ed, #ffffff); }
+    .k8s-hover:hover { background: linear-gradient(135deg, #326ce5, #ffffff); }
+    .linux-hover:hover { background: linear-gradient(135deg, #f5c518, #ffffff); }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="text-2xl font-bold">Latesh Patil</a>
+      <div class="space-x-4">
+        <a href="./index.html" class="hover:text-blue-500">Home</a>
+        <a href="./about.html" class="hover:text-blue-500">About</a>
+        <a href="./projects.html" class="hover:text-blue-500 active-nav">Projects</a>
+        <a href="./blog.html" class="hover:text-blue-500">Blog</a>
+        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+          <span x-show="!darkMode">🌙</span>
+          <span x-show="darkMode">☀️</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Projects Section -->
+  <section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">My Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover k8s-hover">
+          <h3 class="text-xl font-semibold mb-2">AWS EKS Setup with Terraform</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Deployed a scalable Kubernetes cluster on AWS using Terraform and GitHub Actions.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">AWS</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Terraform</span>
+          </div>
+          <a href="https://github.com/lateshpatil/eks-terraform" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Centralized Logging with ELK Stack</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Implemented ELK stack for centralized logging and monitoring of Linux servers.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Elasticsearch</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Kibana</span>
+          </div>
+          <a href="https://github.com/lateshpatil/elk-stack" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover linux-hover">
+          <h3 class="text-xl font-semibold mb-2">Bash Scripts for User & Permission Auditing</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Developed Bash scripts to audit users and permissions on Linux systems.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Bash</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+          </div>
+          <a href="https://github.com/lateshpatil/bash-audit" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Ansible Playbooks for Linux Hardening</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Created Ansible playbooks to enforce CIS benchmarks on Ubuntu servers.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">Ansible</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
+            <span class="px-2 py-1 bg-gray-600 text-white rounded">Security</span>
+          </div>
+          <a href="https://github.com/lateshpatil/ansible-hardening" class="text-blue-500 hover:underline">GitHub Repo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:latesh.cloud.devops@example.com" class="underline">latesh.cloud.devops@example.com</a></p>
+      <div class="mt-4 space-x-4">
+        <a href="https://github.com/lateshpatil" class="hover:text-blue-400">GitHub</a>
+        <a href="https://linkedin.com/in/lateshpatil" class="hover:text-blue-400">LinkedIn</a>
+        <a href="mailto:latesh.cloud.devops@example.com" class="hover:text-blue-400">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add('active-nav');
+      }
+    });
+  </script>
+</body>
+</html>

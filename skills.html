@@ -70,6 +70,7 @@
         <a href="./about.html" class="hover:text-blue-500 active-nav">About</a>
         <a href="./projects.html" class="hover:text-blue-500">Projects</a>
         <a href="./blog.html" class="hover:text-blue-500">Blog</a>
+        <a href="./skills.html" class="hover:text-blue-500">Skills</a>
         <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
           <span x-show="!darkMode">🌙</span>
           <span x-show="darkMode">☀️</span>
@@ -78,39 +79,64 @@
     </div>
   </nav>
 
-  <!-- About Section -->
-  <section class="py-16 bg-white dark:bg-gray-800">
-  
-<div id="skills-section" class="py-16 bg-white dark:bg-gray-800">
-  <h2 class="text-3xl font-bold mb-12 text-center">Skills</h2>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-      <h3 class="text-xl font-semibold mb-2">Cloud</h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="px-2 py-1 bg-blue-500 text-white rounded docker-hover">AWS</span>
-        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">GCP</span>
-        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Azure</span>
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12">About Me</h2>
+      <div class="relative timeline">
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">Cloud & DevOps Engineer at TechCorp</h3>
+            <p class="text-gray-600 dark:text-gray-400">2023 - Present</p>
+            <p>Designed AWS EKS clusters and automated CI/CD pipelines with GitHub Actions.</p>
+          </div>
+          <div class="md:w-1/2"></div>
+        </div>
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2"></div>
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">AWS Certified DevOps Engineer</h3>
+            <p class="text-gray-600 dark:text-gray-400">2022</p>
+            <p>Earned certification in AWS DevOps tools and practices.</p>
+          </div>
+        </div>
+        <div class="timeline-item flex flex-col md:flex-row items-center mb-12">
+          <div class="md:w-1/2 p-4">
+            <h3 class="text-xl font-semibold">Linux Administrator at SysAdmin Ltd</h3>
+            <p class="text-gray-600 dark:text-gray-400">2020 - 2023</p>
+            <p>Managed Linux servers, implemented CIS benchmarks, and wrote Bash scripts.</p>
+          </div>
+          <div class="md:w"></div>
+        </div>
+      </div>
+      <h2 class="text-3xl font-bold mb-12">Skills</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Cloud</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-blue-500 text-white rounded docker-hover">AWS</span>
+          
+            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">GCP</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Azure</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="mb-2xl font-semibold text">Linux</h3>
+          <div class="gap-2 flex flex-wrap">
+            <span class="px-2 py-1 bg-yellow-500 text-white linux-hover rounded">Python</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SELinux</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SystemD</span>
+          </div>
+        </div>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+          <h3 class="text-xl font-semibold mb-2">Containers</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Docker</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
+            <span class="px-2 px-1 bg-blue-600 text-white rounded k8s-hover">Podman</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-      <h3 class="text-xl font-semibold mb-2">Linux</h3>
-      <div class="gap-2 flex flex-wrap">
-        <span class="px-2 py-1 bg-yellow-500 text-white linux-hover rounded">Python</span>
-        <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SELinux</span>
-        <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SystemD</span>
-      </div>
-    </div>
-    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-      <h3 class="text-xl font-semibold mb-2">Containers</h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Docker</span>
-        <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
-        <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Podman</span>
-      </div>
-    </div>
-  </div>
-</div>
-
   </section>
 
   <!-- Footer -->

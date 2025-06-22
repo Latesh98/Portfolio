@@ -38,14 +38,14 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
-<html lang="en"  :class="{ 'dark': darkMode }">
+<html lang="en" :class="{ 'dark': darkMode }">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Blog by Latesh Patil on Cloud, DevOps, Linux, and automation topics.">
-  <meta name="keywords" content="Cloud, DevOps, Linux, AWS, Ansible, Kubernetes, Blog">
+  <meta name="description" content="About Latesh Patil, Cloud & DevOps Engineer with expertise in Linux, AWS, Kubernetes, and Infrastructure as Code.">
+  <meta name="keywords" content="Cloud Engineer, DevOps, Linux, AWS, Kubernetes, Terraform, Docker">
   <meta name="author" content="Latesh Patil">
-  <title>Blog | Latesh Patil</title>
+  <title>About | Latesh Patil</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <style>
@@ -56,18 +56,20 @@
     .docker-hover:hover { background: linear-gradient(135deg, #0db7ed, #ffffff); }
     .k8s-hover:hover { background: linear-gradient(135deg, #326ce5, #ffffff); }
     .linux-hover:hover { background: linear-gradient(135deg, #f5c518, #ffffff); }
+    .timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: #e5e7eb; transform: translateX(-50%); }
+    .timeline-item:nth-child(even) { flex-direction: row-reverse; }
   </style>
 </head>
-<body x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+<body  x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
   <!-- Navbar -->
   <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <a href="./index.html" class="text-2xl font-bold">Latesh Patil</a>
       <div class="space-x-4">
         <a href="./index.html" class="hover:text-blue-500">Home</a>
-        <a href="./about.html" class="hover:text-blue-500">About</a>
+        <a href="./about.html" class="hover:text-blue-500 active-nav">About</a>
         <a href="./projects.html" class="hover:text-blue-500">Projects</a>
-        <a href="./blog.html" class="hover:text-blue-500 active-nav">Blog</a>
+        <a href="./blog.html" class="hover:text-blue-500">Blog</a>
         <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
           <span x-show="!darkMode">🌙</span>
           <span x-show="darkMode">☀️</span>
@@ -76,51 +78,42 @@
     </div>
   </nav>
 
-  <!-- Blog Section -->
+  <!-- About Section -->
   <section class="py-16 bg-white dark:bg-gray-800">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12">Blog</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="blog-posts">
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover linux-hover">
-          <h3 class="text-xl font-semibold mb-2">How to Automate Linux Patching</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-2">June 1, 2025</p>
-          <p>Learn how to use Ansible and cron to automate Linux patching for Ubuntu servers.</p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
-            <span class="px-2 py-1 bg-blue-500 text-white rounded">Ansible</span>
-          </div>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-          <h3 class="text-xl font-semibold mb-2">Hardening Ubuntu with CIS Level 1 Benchmark</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-2">June 10, 2025</p>
-          <p>Step-by-step guide to secure Ubuntu servers using CIS benchmarks.</p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <span class="px-2 py-1 bg-blue-600 text-white rounded">Security</span>
-            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Linux</span>
-          </div>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-          <h3 class="text-xl font-semibold mb-2">Monitoring EC2 with CloudWatch + Prometheus</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-2">June 15, 2025</p>
-          <p>Setup monitoring for AWS EC2 instances using CloudWatch and Prometheus.</p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <span class="px-2 py-1 bg-blue-500 text-white rounded">AWS</span>
-            <span class="px-2 py-1 bg-blue-500 text-white rounded">Prometheus</span>
-          </div>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover linux-hover">
-          <h3 class="text-xl font-semibold mb-2">Bash vs Python for Admin Tasks</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-2">June 20, 2025</p>
-          <p>Comparing Bash and Python for Linux system administration tasks.</p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">Bash</span>
-            <span class="px-2 py-1 bg-blue-500 text-white rounded">Python</span>
-          </div>
-        </div>
+  
+<div id="skills-section" class="py-16 bg-white dark:bg-gray-800">
+  <h2 class="text-3xl font-bold mb-12 text-center">Skills</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+      <h3 class="text-xl font-semibold mb-2">Cloud</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-2 py-1 bg-blue-500 text-white rounded docker-hover">AWS</span>
+        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">GCP</span>
+        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Azure</span>
       </div>
     </div>
+    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+      <h3 class="text-xl font-semibold mb-2">Linux</h3>
+      <div class="gap-2 flex flex-wrap">
+        <span class="px-2 py-1 bg-yellow-500 text-white linux-hover rounded">Python</span>
+        <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SELinux</span>
+        <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SystemD</span>
+      </div>
+    </div>
+    <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
+      <h3 class="text-xl font-semibold mb-2">Containers</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Docker</span>
+        <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
+        <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Podman</span>
+      </div>
+    </div>
+  </div>
+</div>
+
   </section>
 
+  <!-- Footer -->
   <footer class="bg-gray-900 text-white py-8">
     <div class="container mx-auto px-4 text-center">
       <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
@@ -134,13 +127,14 @@
 
   <script>
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+      anchor.addEventListener('click', function (e) => {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
       });
     });
-    const navLinks = document.querySelectorAll('nav a');
-    navLinks.forEach(link => {
+    document.querySelectorAll('nav a').forEach(link => {
       if (link.href === window.location.href) {
         link.classList.add('active-nav');
       }
@@ -148,3 +142,17 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

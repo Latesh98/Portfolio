@@ -38,106 +38,133 @@
         return gk_fileData[filename] || "";
         }
         </script><!DOCTYPE html>
-<html lang="en" :class="{ 'dark': darkMode }">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="About Latesh Patil, Cloud & DevOps Engineer with expertise in Linux, AWS, Kubernetes, and Infrastructure as Code.">
+  <meta name="description" content="Skills of Latesh Patil, Cloud & DevOps Engineer with expertise in Linux, AWS, Kubernetes, and Infrastructure as Code.">
   <meta name="keywords" content="Cloud Engineer, DevOps, Linux, AWS, Kubernetes, Terraform, Docker">
   <meta name="author" content="Latesh Patil">
-  <title>About | Latesh Patil</title>
+  <title>Skills | Latesh Patil</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <style>
-    .brush-stroke { background: url('https://via.placeholder.com/200x200.png?text=Brush+Stroke') no-repeat center; background-size: cover; }
-    .card-hover:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
-    .smooth-scroll { scroll-behavior: smooth; }
-    .active-nav { @apply text-blue-500 border-b-2 border-blue-500; }
-    .docker-hover:hover { background: linear-gradient(135deg, #0db7ed, #ffffff); }
-    .k8s-hover:hover { background: linear-gradient(135deg, #326ce5, #ffffff); }
-    .linux-hover:hover { background: linear-gradient(135deg, #f5c518, #ffffff); }
-    .timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: #e5e7eb; transform: translateX(-50%); }
-    .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+    .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+    .card-hover:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(59,130,246,0.15); transition: all 0.3s; }
+    .darkmode-toggle { transition: background 0.3s; }
   </style>
+  <script>
+    // On page load, set the dark class on <html> if needed
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
 </head>
-<body  x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
   <!-- Navbar -->
   <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <a href="./index.html" class="text-2xl font-bold">Latesh Patil</a>
-      <div class="space-x-4">
+      <a href="./index.html" class="flex items-center text-2xl font-bold">
+        <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
+      </a>
+      <div class="space-x-4 flex items-center">
         <a href="./index.html" class="hover:text-blue-500">Home</a>
-        <a href="./about.html" class="hover:text-blue-500 active-nav">About</a>
+        <a href="./about.html" class="hover:text-blue-500">About</a>
         <a href="./projects.html" class="hover:text-blue-500">Projects</a>
         <a href="./blog.html" class="hover:text-blue-500">Blog</a>
-        <a href="./skills.html" class="hover:text-blue-500">Skills</a>
-        <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700">
-          <span x-show="!darkMode">🌙</span>
-          <span x-show="darkMode">☀️</span>
+        <a href="./skills.html" class="hover:text-blue-500 active-nav">Skills</a>
+        <button id="darkModeToggle" class="ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 darkmode-toggle border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+          <span id="moon" style="display:none;">🌙</span>
+          <span id="sun" style="display:none;">☀️</span>
         </button>
       </div>
     </div>
   </nav>
 
-<section class="py-16 bg-white dark:bg-gray-800">
-    
-      <h2 class="text-3xl font-bold mb-12">Skills</h2>
+  <!-- Skills Hero Section -->
+  <section class="py-12 bg-gradient-to-r from-blue-500 to-teal-500 dark:from-gray-800 dark:to-gray-900 text-center">
+    <h2 class="text-4xl font-bold text-white mb-2">Skills</h2>
+    <p class="text-blue-100 dark:text-blue-300 max-w-xl mx-auto">A snapshot of my technical expertise in cloud, DevOps, Linux, containers, and automation tools.</p>
+  </section>
+
+  <section class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-          <h3 class="text-xl font-semibold mb-2">Cloud</h3>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
+          <h3 class="text-xl font-semibold mb-2">☁️ Cloud</h3>
           <div class="flex flex-wrap gap-2">
-            <span class="px-2 py-1 bg-blue-500 text-white rounded docker-hover">AWS</span>
-          
-            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">GCP</span>
-            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Azure</span>
+            <span class="px-2 py-1 bg-blue-500 text-white rounded">AWS</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">GCP</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Azure</span>
           </div>
         </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-          <h3 class="mb-2xl font-semibold text">Linux</h3>
-          <div class="gap-2 flex flex-wrap">
-            <span class="px-2 py-1 bg-yellow-500 text-white linux-hover rounded">Python</span>
-            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SELinux</span>
-            <span class="px-2 py-1 bg-yellow-500 text-white rounded linux-hover">SystemD</span>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
+          <h3 class="text-xl font-semibold mb-2">🐧 Linux</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">Python</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">SELinux</span>
+            <span class="px-2 py-1 bg-yellow-500 text-white rounded">SystemD</span>
           </div>
         </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-lg card-hover">
-          <h3 class="text-xl font-semibold mb-2">Containers</h3>
+        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
+          <h3 class="text-xl font-semibold mb-2">📦 Containers</h3>
           <div class="flex flex-wrap gap-2">
-            <span class="px-2 py-1 bg-blue-600 text-white rounded docker-hover">Docker</span>
-            <span class="px-2 py-1 bg-blue-600 text-white rounded k8s-hover">Kubernetes</span>
-            <span class="px-2 px-1 bg-blue-600 text-white rounded k8s-hover">Podman</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Docker</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Kubernetes</span>
+            <span class="px-2 py-1 bg-blue-600 text-white rounded">Podman</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="bg-gray-900 text-white py-8">
     <div class="container mx-auto px-4 text-center">
       <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
-      <div class="mt-4 space-x-4">
-        <a href="https://github.com/Latesh98" class="hover:text-blue-400">GitHub</a>
-        <a href="https://www.linkedin.com/in/latesh-patil-5b4560222" class="hover:text-blue-400">LinkedIn</a>
-        <a href="mailto:patillatesh17@gmail.com" class="hover:text-blue-400">Email</a>
+      <div class="mt-4 flex justify-center space-x-6">
+        <a href="https://github.com/Latesh98" class="hover:text-blue-400" aria-label="GitHub"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 2.92-.39c.99.01 1.99.13 2.92.39 2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.67.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/></svg></a>
+        <a href="https://www.linkedin.com/in/latesh-patil-5b4560222" class="hover:text-blue-400" aria-label="LinkedIn"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.89v1.23h.04c.4-.75 1.37-1.54 2.82-1.54 3.01 0 3.57 1.98 3.57 4.56v4.75z"/></svg></a>
+        <a href="mailto:patillatesh17@gmail.com" class="hover:text-blue-400" aria-label="Email"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 13.065l-8.447-6.723a.75.75 0 0 1 .947-1.184l8.5 6.77 8.5-6.77a.75.75 0 1 1 .947 1.184L12 13.065z"/><path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75a.75.75 0 0 1 1.5 0v10.5c0 .414.336.75.75.75h15a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 1 1.5 0z"/></svg></a>
       </div>
     </div>
   </footer>
 
   <script>
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) => {
+      anchor.addEventListener('click', function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
-        });
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
       });
     });
-    document.querySelectorAll('nav a').forEach(link => {
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
       if (link.href === window.location.href) {
         link.classList.add('active-nav');
       }
     });
+  </script>
+  <script>
+    function setDarkModeUI(isDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('moon').style.display = 'none';
+        document.getElementById('sun').style.display = '';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('moon').style.display = '';
+        document.getElementById('sun').style.display = 'none';
+      }
+    }
+    // On page load
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkModeUI(isDark);
+    document.getElementById('darkModeToggle').onclick = function() {
+      const currentlyDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('darkMode', !currentlyDark);
+      setDarkModeUI(!currentlyDark);
+    };
   </script>
 </body>
 </html>

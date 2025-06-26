@@ -3,6 +3,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Serve static files (HTML, CSS, JS, images)
+app.use(express.static(__dirname));
+
 // Middleware
 app.use(cors());
 app.use(express.json());

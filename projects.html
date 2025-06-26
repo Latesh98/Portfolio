@@ -52,6 +52,49 @@
     .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
     .card-hover:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(59,130,246,0.15); transition: all 0.3s; }
     .darkmode-toggle { transition: background 0.3s; }
+    /* Responsive Navigation */
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      outline: none;
+      color: #3b82f6;
+    }
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: #fff;
+        position: absolute;
+        top: 64px; /* Adjust if your nav is taller */
+        left: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+      .project-card, .p-6 {
+        width: 95% !important;
+        margin: 1rem auto !important;
+        padding: 1rem !important;
+      }
+      .container, .main-content {
+        padding: 1rem !important;
+      }
+      h1, h2, h3 {
+        font-size: 1.5rem !important;
+      }
+      body {
+        font-size: 1rem !important;
+      }
+    }
   </style>
   <script>
     // On page load, set the dark class on <html> if needed
@@ -64,12 +107,13 @@
 </head>
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
   <!-- Navbar -->
-  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50 relative">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <a href="./index.html" class="flex items-center text-2xl font-bold">
         <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
       </a>
-      <div class="space-x-4 flex items-center">
+      <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+      <div class="nav-links space-x-4 flex items-center">
         <a href="./index.html" class="hover:text-blue-500">Home</a>
         <a href="./about.html" class="hover:text-blue-500">About</a>
         <a href="./projects.html" class="hover:text-blue-500 active-nav">Projects</a>
@@ -93,7 +137,7 @@
   <section class="py-16 bg-white dark:bg-gray-800">
     <div class="container mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover k8s-hover shadow">
+        <div class="project-card p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover k8s-hover shadow">
           <h3 class="text-xl font-semibold mb-2">AWS EKS Setup with Terraform</h3>
           <p class="text-gray-600 dark:text-gray-400 mb-4">Deployed a scalable Kubernetes cluster on AWS using Terraform and GitHub Actions.</p>
           <div class="flex flex-wrap gap-2 mb-4">
@@ -103,7 +147,7 @@
           </div>
           <a href="https://github.com/lateshpatil/eks-terraform" class="text-blue-500 hover:underline">GitHub Repo</a>
         </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
+        <div class="project-card p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
           <h3 class="text-xl font-semibold mb-2">Centralized Logging with ELK Stack</h3>
           <p class="text-gray-600 dark:text-gray-400 mb-4">Implemented ELK stack for centralized logging and monitoring of Linux servers.</p>
           <div class="flex flex-wrap gap-2 mb-4">
@@ -113,7 +157,7 @@
           </div>
           <a href="https://github.com/lateshpatil/elk-stack" class="text-blue-500 hover:underline">GitHub Repo</a>
         </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover linux-hover shadow">
+        <div class="project-card p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover linux-hover shadow">
           <h3 class="text-xl font-semibold mb-2">Bash Scripts for User & Permission Auditing</h3>
           <p class="text-gray-600 dark:text-gray-400 mb-4">Developed Bash scripts to audit users and permissions on Linux systems.</p>
           <div class="flex flex-wrap gap-2 mb-4">
@@ -122,7 +166,7 @@
           </div>
           <a href="https://github.com/lateshpatil/bash-audit" class="text-blue-500 hover:underline">GitHub Repo</a>
         </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
+        <div class="project-card p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
           <h3 class="text-xl font-semibold mb-2">Ansible Playbooks for Linux Hardening</h3>
           <p class="text-gray-600 dark:text-gray-400 mb-4">Created Ansible playbooks to enforce CIS benchmarks on Ubuntu servers.</p>
           <div class="flex flex-wrap gap-2 mb-4">
@@ -160,6 +204,10 @@
         link.classList.add('active-nav');
       }
     });
+    // Hamburger menu toggle
+    function toggleMenu() {
+      document.querySelector('.nav-links').classList.toggle('active');
+    }
   </script>
   <script>
     function setDarkModeUI(isDark) {

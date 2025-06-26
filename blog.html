@@ -52,6 +52,48 @@
     .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
     .card-hover:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(59,130,246,0.15); transition: all 0.3s; }
     .darkmode-toggle { transition: background 0.3s; }
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      outline: none;
+      color: #3b82f6;
+    }
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: #fff;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+      .nav-links.active {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+      .card-hover, .p-6 {
+        width: 95% !important;
+        margin: 1rem auto !important;
+        padding: 1rem !important;
+      }
+      .container, .main-content {
+        padding: 1rem !important;
+      }
+      h1, h2, h3 {
+        font-size: 1.5rem !important;
+      }
+      body {
+        font-size: 1rem !important;
+      }
+    }
   </style>
   <script>
     // On page load, set the dark class on <html> if needed
@@ -64,12 +106,13 @@
 </head>
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
   <!-- Navbar -->
-  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50 relative">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <a href="./index.html" class="flex items-center text-2xl font-bold">
         <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
       </a>
-      <div class="space-x-4 flex items-center">
+      <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
+      <div class="nav-links space-x-4 flex items-center">
         <a href="./index.html" class="hover:text-blue-500">Home</a>
         <a href="./about.html" class="hover:text-blue-500">About</a>
         <a href="./projects.html" class="hover:text-blue-500">Projects</a>
@@ -157,6 +200,10 @@
         link.classList.add('active-nav');
       }
     });
+    // Hamburger menu toggle
+    function toggleMenu() {
+      document.querySelector('.nav-links').classList.toggle('active');
+    }
   </script>
   <script>
     function setDarkModeUI(isDark) {

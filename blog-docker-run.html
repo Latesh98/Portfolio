@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Breaking Down Docker: What Really Happens When You Run 'docker run nginx'? - Step-by-step workflow and Docker architecture explained.">
+  <meta name="keywords" content="Docker, Container, Architecture, runc, containerd, dockerd, Linux, OCI, DevOps">
+  <meta name="author" content="Latesh Patil">
+  <title>Breaking Down Docker: What Really Happens When You Run 'docker run nginx'?</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+    .code-block { background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; font-family: monospace; overflow-x: auto; margin: 1rem 0; }
+    .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    .info-box { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    /* Hover effects for links and buttons */
+    .nav-link {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover {
+      color: #3b82f6;
+      transform: translateY(-2px);
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .tooltip {
+      position: relative;
+      cursor: pointer;
+    }
+    .tooltip::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: 115%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .tooltip:hover::before,
+    .tooltip:hover::after {
+      opacity: 1;
+      visibility: visible;
+    }
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .particle {
+      position: absolute;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: float 20s infinite linear;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.1; }
+      90% { opacity: 0.1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="particles" id="particles"></div>
+  </div>
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="flex items-center text-2xl font-bold">
+        <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
+      </a>
+      <div class="space-x-4 flex items-center">
+        <a href="./index.html" class="nav-link tooltip" data-tooltip="Go to Home">Home</a>
+        <a href="./about.html" class="nav-link tooltip" data-tooltip="Learn About Me">About</a>
+        <a href="./projects.html" class="nav-link tooltip" data-tooltip="View My Projects">Projects</a>
+        <a href="./blog.html" class="nav-link tooltip" data-tooltip="Read My Blog">Blog</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Content -->
+  <article class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <nav class="mb-8">
+        <a href="./blog.html" class="text-blue-500 hover:text-blue-700 tooltip transition-all duration-300 hover:scale-110" data-tooltip="Return to Blog List">← Back to Blog</a>
+      </nav>
+      <header class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm">Docker</span>
+          <span class="px-3 py-1 bg-yellow-500 text-white rounded-full text-sm">Containers</span>
+          <span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm">Linux</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Breaking Down Docker: What Really Happens When You Run <code>docker run nginx</code>?</h1>
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-6">
+          <span>June 23, 2025</span>
+          <span class="mx-2">•</span>
+          <span>10 min read</span>
+        </div>
+        <div class="info-box mb-8">
+          <strong>Summary:</strong> This article breaks down the entire lifecycle of a Docker container, from the moment you type <code>docker run nginx</code> to the actual running process. Learn how Docker CLI, dockerd, containerd, runc, and other components work together under the hood.
+        </div>
+        <figure class="mb-8 mx-auto max-w-xl">
+          <img src="docker.png" alt="docker run nginx" class="rounded-xl shadow mx-auto">
+          <figcaption class="text-center text-gray-500 text-sm mt-2">Figure 1: Running <code>docker run nginx</code> starts a complex workflow behind the scenes.</figcaption>
+        </figure>
+      </header>
+      <div class="prose prose-lg max-w-none bg-gray-50 dark:bg-gray-900 p-6 rounded-xl mb-8">
+        <h2 class="text-2xl font-bold mb-4">Docker Architecture</h2>
+        <figure class="mb-8 mx-auto max-w-xl">
+          <img src="architecture.png" alt="Docker Architecture" class="rounded-xl shadow mx-auto">
+          <figcaption class="text-center text-gray-500 text-sm mt-2">Figure 2: Docker architecture and core components.</figcaption>
+        </figure>
+        <h3 class="text-xl font-semibold mb-4">Core Building Blocks of Docker</h3>
+        <ul class="mb-6">
+          <li><strong>Docker CLI</strong>: The command-line interface for interacting with Docker.</li>
+          <li><strong>dockerd</strong>: The Docker daemon that manages containers, images, and more.</li>
+          <li><strong>containerd</strong>: The container runtime that manages the container lifecycle.</li>
+          <li><strong>containerd-shim</strong>: A lightweight process that keeps containers running independently.</li>
+          <li><strong>runc</strong>: The low-level runtime that actually creates and runs containers.</li>
+          <li><strong>libcontainer</strong>: The Go library that handles Linux kernel features for containers.</li>
+        </ul>
+        <hr class="my-8">
+        <h2 class="text-2xl font-bold mb-4">Step-by-Step Workflow: What Happens When You Run <code>docker run nginx</code>?</h2>
+        <ol class="list-decimal list-inside space-y-6">
+          <li>
+            <strong>Step 1: You Type a Docker Command</strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li>You ask Docker to pull the <code>nginx</code> image (if not already present) and start a container based on it.</li>
+              <li>The Docker CLI parses this command and converts it into a REST API call to the Docker daemon (<code>dockerd</code>).</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 2: Docker Daemon (<code>dockerd</code>) Takes Over</strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li><code>dockerd</code> is a long-running process that:</li>
+              <ul class="list-decimal ml-8">
+                <li>Accepts commands from the CLI</li>
+                <li>Pulls the image from Docker Hub if needed</li>
+                <li>Manages images, containers, volumes, and networks</li>
+              </ul>
+              <li><code>dockerd</code> doesn't directly run containers. Instead, it delegates the job to <code>containerd</code>.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 3: <code>containerd</code> Manages the Lifecycle</strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li><code>containerd</code> is a container runtime responsible for:</li>
+              <ul class="list-decimal ml-8">
+                <li>Pulling and unpacking container images</li>
+                <li>Creating containers</li>
+                <li>Starting and stopping containers</li>
+              </ul>
+              <li>It provides the heavy lifting behind container management. <code>dockerd</code> tells <code>containerd</code> to start a container using the image.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 4: <code>containerd</code> Starts <code>containerd-shim</code></strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li>Each running container gets its own <code>containerd-shim</code> process. Think of it as a "middleman" with several key responsibilities:</li>
+              <li>The <code>containerd-shim</code> is an intermediate process that sits between <code>containerd</code> and <code>runc</code> and plays a crucial role in managing container processes independently of <code>runc</code> and without keeping <code>containerd</code> involved after startup.</li>
+              <ul class="list-decimal ml-8">
+                <li>It detaches from <code>containerd</code> once the container is running</li>
+                <li>It monitors the container and keeps it alive</li>
+                <li><code>containerd-shim</code> keeps stdout, stderr, and stdin open for the container.</li>
+                <li>It captures and forwards logs (<code>stdout</code>, stderr)</li>
+                <li>It returns the exit status of the container when it stops.</li>
+              </ul>
+            </ul>
+            <div class="info-box mt-4 mb-2">
+              <strong>Why use a shim?</strong> Because it allows <code>containerd</code> (and even <code>dockerd</code>) to crash or restart without affecting running containers.
+            </div>
+          </li>
+          <li>
+            <strong>Step 5: <code>runc</code> Executes the Container</strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li>Now comes <code>runc</code>, the low-level runtime that does the actual job of running the container.</li>
+              <li><code>runc</code>:</li>
+              <ul class="list-decimal ml-8">
+                <li>Sets up Linux namespaces (for isolation)</li>
+                <li>Applies control groups (cgroups for resource limits)</li>
+                <li>Mounts the container's filesystem</li>
+                <li>Launches the main process inside the container</li>
+              </ul>
+              <li>Once the container is started, <code>runc</code> exits. The shim keeps the process running.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 6: How <code>runc</code> Uses <code>libcontainer</code></strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li><code>libcontainer</code> is a Go library originally developed by Docker and later moved under the Open Container Initiative (OCI). It provides the low-level functions needed to create and manage containers directly via Linux kernel features.</li>
+              <li>It handles:</li>
+              <ul class="list-decimal ml-8">
+                <li>Namespaces (PID, network, mount, UTS, IPC, user)</li>
+                <li>Cgroups (resource limits: CPU, memory, etc.)</li>
+                <li>Filesystem setup (rootfs, mounts)</li>
+                <li>Capabilities (dropping unnecessary root privileges)</li>
+                <li>Security profiles (AppArmor, seccomp, SELinux)</li>
+              </ul>
+              <li><code>runc</code> uses <code>libcontainer</code> to interpret the config and set up the environment for the container.</li>
+              <li><code>libcontainer</code> sets up isolation using kernel features</li>
+              <li><code>libcontainer</code> monitors the process</li>
+              <li>It waits for the container to exit.</li>
+              <li>It reports the exit status back to <code>runc</code> (and to <code>containerd-shim</code> if used through <code>containerd</code>).</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 7: Container Runs, and You Interact With It</strong>
+            <ul class="list-disc ml-6 mt-2">
+              <li>If you run <code>docker ps</code>, it shows running containers</li>
+              <li>If you attach to the container, you're interacting with the process launched by <code>runc</code></li>
+              <li>The container runs isolated from your host OS but shares the same kernel</li>
+            </ul>
+          </li>
+        </ol>
+        <hr class="my-8">
+        <blockquote class="border-l-4 border-blue-400 pl-4 italic text-gray-600 dark:text-gray-300 mb-6">
+          This workflow shows how Docker abstracts away the complexity of Linux containers, making it easy for developers to run applications in isolated environments.
+        </blockquote>
+        <p class="text-sm text-gray-500 mt-8">Source: <a href="https://www.linkedin.com/pulse/breaking-down-docker-what-really-happens-when-you-run-latesh-patil-tfmrc/" class="text-blue-500 hover:text-blue-700" target="_blank" rel="noopener">LinkedIn Article by Latesh Patil</a></p>
+      </div>
+      <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-semibold">Latesh Patil</p>
+              <p class="text-sm text-gray-600">Cloud & DevOps Engineer</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
+    </div>
+  </footer>
+  <script>
+    // Animated background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 20;
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const size = Math.random() * 6 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', createParticles);
+  </script>
+</body>
+</html> 

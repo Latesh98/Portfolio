@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="How I used Cursor, an AI-powered code editor, to build and deploy my personal portfolio website.">
+  <meta name="keywords" content="Cursor, Portfolio, AI, Code Editor, Web Development, Experience">
+  <meta name="author" content="Latesh Patil">
+  <title>Building My Portfolio with Cursor: A Developer's Experience</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
+    .code-block { background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; font-family: monospace; overflow-x: auto; margin: 1rem 0; }
+    .info-box { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    .tip-box { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    .nav-link { position: relative; transition: all 0.3s ease; }
+    .nav-link:hover { color: #3b82f6; transform: translateY(-2px); }
+    .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: linear-gradient(90deg, #3b82f6, #06b6d4); transition: width 0.3s ease; }
+    .nav-link:hover::after { width: 100%; }
+    .tooltip { position: relative; cursor: pointer; }
+    .tooltip::before { content: attr(data-tooltip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }
+    .tooltip::after { content: ''; position: absolute; bottom: 115%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: rgba(0, 0, 0, 0.8); opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+    .tooltip:hover::before, .tooltip:hover::after { opacity: 1; visibility: visible; }
+    .animated-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+    .particles { position: absolute; width: 100%; height: 100%; }
+    .particle { position: absolute; background: linear-gradient(45deg, #3b82f6, #06b6d4); border-radius: 50%; opacity: 0.1; animation: float 20s infinite linear; }
+    @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 0.1; } 90% { opacity: 0.1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="particles" id="particles"></div>
+  </div>
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="flex items-center text-2xl font-bold">
+        <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
+      </a>
+      <div class="space-x-4 flex items-center">
+        <a href="./index.html" class="nav-link tooltip" data-tooltip="Go to Home">Home</a>
+        <a href="./about.html" class="nav-link tooltip" data-tooltip="Learn About Me">About</a>
+        <a href="./projects.html" class="nav-link tooltip" data-tooltip="View My Projects">Projects</a>
+        <a href="./blog.html" class="nav-link tooltip" data-tooltip="Read My Blog">Blog</a>
+      </div>
+    </div>
+  </nav>
+  <!-- Blog Content -->
+  <article class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <nav class="mb-8">
+        <a href="./blog.html" class="text-blue-500 hover:text-blue-700 tooltip transition-all duration-300 hover:scale-110" data-tooltip="Return to Blog List">← Back to Blog</a>
+      </nav>
+      <header class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm">Cursor</span>
+          <span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm">Portfolio</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Building My Portfolio with Cursor: A Developer's Experience</h1>
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-6">
+          <span>June 2025</span>
+          <span class="mx-2">•</span>
+          <span>6 min read</span>
+        </div>
+        <div class="info-box mb-8">
+          <strong>Summary:</strong> This post shares my journey of creating a personal portfolio website using Cursor, an AI-powered code editor. I'll explain what Cursor is, how it streamlined my workflow, and why it's a great tool for web development and learning.
+        </div>
+      </header>
+      <div class="prose prose-lg max-w-none bg-gray-50 dark:bg-gray-900 p-6 rounded-xl mb-8">
+        <h2 class="text-2xl font-bold mb-4">What is Cursor?</h2>
+        <p>Cursor is a modern code editor that integrates AI directly into your development workflow. It's built on top of VS Code, but with powerful features like:</p>
+        <ul class="mb-6">
+          <li><strong>AI pair programming:</strong> Get real-time code suggestions, explanations, and bug fixes.</li>
+          <li><strong>Natural language commands:</strong> Ask for code changes, refactoring, or explanations in plain English.</li>
+          <li><strong>Context awareness:</strong> Cursor understands your project structure, dependencies, and even your coding style.</li>
+          <li><strong>Seamless integration:</strong> Use it for web, Python, Node.js, and more—no extra setup required.</li>
+        </ul>
+        <h2 class="text-2xl font-bold mb-4">Why I Chose Cursor for My Portfolio</h2>
+        <ul class="mb-6">
+          <li><strong>Speed:</strong> I could describe what I wanted ("add a blog section," "make links animated on hover," "remove dark mode toggle") and Cursor would instantly update my HTML/CSS/JS.</li>
+          <li><strong>Learning:</strong> Whenever I was unsure about a concept (like semantic HTML, responsive design, or GitHub Pages deployment), I could ask Cursor for an explanation or code sample.</li>
+          <li><strong>Error reduction:</strong> Cursor caught typos, missing tags, and even suggested accessibility improvements.</li>
+          <li><strong>Experimentation:</strong> I could try new features (like animated backgrounds or tooltips) with confidence, knowing I could always undo or refine changes.</li>
+        </ul>
+        <h2 class="text-2xl font-bold mb-4">How I Built My Portfolio with Cursor</h2>
+        <ol class="list-decimal list-inside space-y-4 mb-6">
+          <li><strong>Project Setup:</strong> I started with a basic HTML/CSS template. Cursor helped me organize my files and set up a clean structure.</li>
+          <li><strong>Navigation & Pages:</strong> I described the sections I wanted (Home, About, Projects, Blog), and Cursor generated the navigation bar and individual pages.</li>
+          <li><strong>Styling & Interactivity:</strong> I asked Cursor to add hover effects, tooltips, and even a live animated background—all with smooth transitions and modern design.</li>
+          <li><strong>Blog System:</strong> Adding new blog posts was as simple as describing the content and images. Cursor handled the formatting, linking, and even semantic HTML.</li>
+          <li><strong>Deployment:</strong> Cursor guided me through deploying to GitHub Pages, including creating a workflow file and writing a README with instructions.</li>
+          <li><strong>Iterative Improvements:</strong> Whenever I wanted to tweak something (like removing the skills section or updating contact info), I just told Cursor what to do.</li>
+        </ol>
+        <div class="tip-box mb-6">
+          <strong>Tips for Using Cursor Effectively:</strong>
+          <ul class="mt-2">
+            <li><strong>Be specific:</strong> The more clearly you describe your goal, the better Cursor can help.</li>
+            <li><strong>Iterate:</strong> Don't be afraid to ask for changes, reversions, or new features.</li>
+            <li><strong>Learn as you go:</strong> Use Cursor's explanations to deepen your understanding of web development.</li>
+            <li><strong>Leverage AI for repetitive tasks:</strong> Let Cursor handle boilerplate, formatting, and refactoring.</li>
+          </ul>
+        </div>
+        <h2 class="text-2xl font-bold mb-4">Conclusion</h2>
+        <blockquote class="border-l-4 border-blue-400 pl-4 italic text-gray-600 dark:text-gray-300 mb-6">
+          Building my portfolio with Cursor was a game-changer. It felt like having an expert developer by my side, ready to code, explain, and improve my project at any time. If you're looking to build your own site, learn new skills, or just code faster, I highly recommend giving Cursor a try!
+        </blockquote>
+        <p class="text-sm text-gray-500 mt-8">Source: <a href="https://www.cursor.so/" class="text-blue-500 hover:text-blue-700" target="_blank" rel="noopener">Cursor Official Website</a></p>
+      </div>
+      <footer class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-semibold">Latesh Patil</p>
+              <p class="text-sm text-gray-600">Cloud & DevOps Engineer</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
+    </div>
+  </footer>
+  <script>
+    // Animated background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 20;
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const size = Math.random() * 6 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', createParticles);
+  </script>
+</body>
+</html> 

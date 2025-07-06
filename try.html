@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardening Ubuntu with CIS Level 1 Benchmark | Latesh Patil</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .code-block { background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; font-family: monospace; overflow-x: auto; margin: 1rem 0; }
+    .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+    .info-box { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; }
+  </style>
+</head>
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="./index.html" class="flex items-center text-2xl font-bold">
+        <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
+      </a>
+      <div class="space-x-4 flex items-center">
+        <a href="./index.html" class="hover:text-blue-500">Home</a>
+        <a href="./about.html" class="hover:text-blue-500">About</a>
+        <a href="./projects.html" class="hover:text-blue-500">Projects</a>
+        <a href="./blog.html" class="hover:text-blue-500 active-nav">Blog</a>
+        <a href="./skills.html" class="hover:text-blue-500">Skills</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Blog Content -->
+  <article class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <nav class="mb-8">
+        <a href="./blog.html" class="text-blue-500 hover:text-blue-700">← Back to Blog</a>
+      </nav>
+
+      <header class="mb-12">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm">Security</span>
+          <span class="px-3 py-1 bg-yellow-500 text-white rounded-full text-sm">Linux</span>
+          <span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm">Ubuntu</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Hardening Ubuntu with CIS Level 1 Benchmark</h1>
+        <div class="flex items-center text-gray-600 dark:text-gray-400 mb-6">
+          <span>June 10, 2025</span>
+          <span class="mx-2">•</span>
+          <span>15 min read</span>
+        </div>
+        <p class="text-xl text-gray-700 dark:text-gray-300">
+          A comprehensive guide to securing Ubuntu servers using the Center for Internet Security (CIS) Level 1 benchmarks.
+        </p>
+      </header>
+
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <h2>What are CIS Benchmarks?</h2>
+        <p>The Center for Internet Security (CIS) Benchmarks are consensus-based, secure configuration guidelines developed by cybersecurity experts. CIS Level 1 benchmarks provide essential security controls designed to be implemented without significantly impacting system functionality.</p>
+
+        <div class="info-box">
+          <strong>Note:</strong> This guide focuses on Ubuntu 22.04 LTS. Always test configurations in a development environment first.
+        </div>
+
+        <h2>1. Initial System Assessment</h2>
+        <p>Before implementing security controls, assess your current system:</p>
+        <div class="code-block">
+# Check Ubuntu version
+lsb_release -a
+
+# Check running services
+systemctl list-units --type=service --state=running
+
+# Check open ports
+ss -tuln
+
+# Check user accounts
+cat /etc/passwd | grep -E ":[0-9]{4}:" | cut -d: -f1
+        </div>
+
+        <h2>2. Install Security Tools</h2>
+        <div class="code-block">
+# Update and install security tools
+sudo apt update
+sudo apt install -y auditd fail2ban ufw rkhunter chkrootkit lynis apparmor-utils
+        </div>
+
+        <h2>3. Account and Access Control</h2>
+        <h3>3.1 Password Policy</h3>
+        <div class="code-block">
+# Configure password aging
+sudo nano /etc/login.defs
+
+# Set these values:
+PASS_MAX_DAYS 90
+PASS_MIN_DAYS 7
+PASS_WARN_AGE 7
+
+# Install and configure password complexity
+sudo apt install -y libpam-pwquality
+sudo nano /etc/pam.d/common-password
+
+# Add: password requisite pam_pwquality.so retry=3 minlen=12 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1
+        </div>
+
+        <h2>4. Network Security</h2>
+        <h3>4.1 Configure Firewall</h3>
+        <div class="code-block">
+# Enable UFW
+sudo ufw enable
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+        </div>
+
+        <h3>4.2 Secure SSH Configuration</h3>
+        <div class="code-block">
+# Backup SSH config
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+
+# Edit SSH configuration
+sudo nano /etc/ssh/sshd_config
+
+# Apply these settings:
+Protocol 2
+LogLevel INFO
+X11Forwarding no
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 0
+PermitRootLogin no
+PermitEmptyPasswords no
+        </div>
+
+        <div class="warning-box">
+          <strong>Warning:</strong> Ensure you have console access before restarting SSH in case of configuration errors.
+        </div>
+
+        <h2>5. System Services</h2>
+        <div class="code-block">
+# Disable unnecessary services
+sudo systemctl disable bluetooth cups avahi-daemon rpcbind nfs-common
+sudo systemctl stop bluetooth cups avahi-daemon rpcbind nfs-common
+        </div>
+
+        <h2>6. File System Security</h2>
+        <div class="code-block">
+# Secure critical files
+sudo chmod 644 /etc/passwd
+sudo chmod 600 /etc/shadow
+sudo chmod 644 /etc/group
+sudo chmod 600 /etc/gshadow
+
+# Secure boot files
+sudo chmod 600 /boot/grub/grub.cfg
+sudo chown root:root /boot/grub/grub.cfg
+        </div>
+
+        <h2>7. Kernel Security Parameters</h2>
+        <div class="code-block">
+# Configure sysctl parameters
+sudo nano /etc/sysctl.conf
+
+# Add these security parameters:
+net.ipv4.ip_forward = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+net.ipv4.tcp_syncookies = 1
+
+# Apply changes
+sudo sysctl -p
+        </div>
+
+        <h2>8. Application Security</h2>
+        <h3>8.1 Configure AppArmor</h3>
+        <div class="code-block">
+# Check AppArmor status
+sudo aa-status
+
+# Enable AppArmor for services
+sudo aa-enforce /usr/sbin/sshd
+sudo aa-enforce /usr/sbin/nginx
+        </div>
+
+        <h3>8.2 Configure Fail2ban</h3>
+        <div class="code-block">
+# Configure Fail2ban
+sudo nano /etc/fail2ban/jail.local
+
+# Add configuration:
+[DEFAULT]
+bantime = 3600
+findtime = 600
+maxretry = 3
+
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+
+# Restart Fail2ban
+sudo systemctl restart fail2ban
+sudo systemctl enable fail2ban
+        </div>
+
+        <h2>9. Security Monitoring</h2>
+        <div class="code-block">
+# Configure auditd
+sudo systemctl enable auditd
+sudo systemctl start auditd
+
+# Add audit rules
+sudo nano /etc/audit/rules.d/audit.rules
+
+# Add these rules:
+-w /etc/passwd -p wa -k identity
+-w /etc/group -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/ssh/sshd_config -p wa -k sshd
+-w /var/log/auth.log -p wa -k authentication
+        </div>
+
+        <h2>10. Regular Security Maintenance</h2>
+        <div class="code-block">
+# Install unattended-upgrades
+sudo apt install -y unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
+
+# Create security monitoring script
+sudo nano /usr/local/bin/security-check.sh
+
+#!/bin/bash
+echo "=== Security Check Report ==="
+echo "Date: $(date)"
+echo "Failed login attempts:"
+grep "Failed password" /var/log/auth.log | tail -10
+echo "Open ports:"
+ss -tuln
+echo "Running services:"
+systemctl list-units --type=service --state=running
+
+# Make executable
+sudo chmod +x /usr/local/bin/security-check.sh
+        </div>
+
+        <h2>11. Verification and Testing</h2>
+        <div class="code-block">
+# Run security audits
+sudo lynis audit system
+sudo rkhunter --check --skip-keypress
+sudo chkrootkit
+
+# Test SSH security
+nmap -p 22 --script ssh-enum-algos localhost
+
+# Check firewall rules
+sudo ufw status numbered
+        </div>
+
+        <h2>Conclusion</h2>
+        <p>Implementing CIS Level 1 benchmarks significantly improves your Ubuntu server's security posture. Remember to:</p>
+        <ul>
+          <li>Test all configurations in a development environment first</li>
+          <li>Document all changes made to your system</li>
+          <li>Regularly review and update security configurations</li>
+          <li>Monitor system logs for security events</li>
+          <li>Keep your system updated with security patches</li>
+        </ul>
+
+        <div class="info-box">
+          <strong>Next Steps:</strong> Consider implementing CIS Level 2 benchmarks for enhanced security, 
+          or explore additional security tools like SELinux, Security Onion, or OSSEC.
+        </div>
+
+        <h2>Useful Resources</h2>
+        <ul>
+          <li><a href="https://www.cisecurity.org/benchmark/ubuntu_linux/" class="text-blue-500 hover:text-blue-700">Official CIS Ubuntu Benchmark</a></li>
+          <li><a href="https://ubuntu.com/security" class="text-blue-500 hover:text-blue-700">Ubuntu Security Documentation</a></li>
+          <li><a href="https://www.apparmor.net/" class="text-blue-500 hover:text-blue-700">AppArmor Documentation</a></li>
+        </ul>
+      </div>
+
+      <footer class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-12 h-12 rounded-full">
+            <div>
+              <p class="font-semibold">Latesh Patil</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Cloud & DevOps Engineer</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </article>
+
+  <footer class="bg-gray-900 text-white py-8">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
+    </div>
+  </footer>
+</body>
+</html>

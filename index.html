@@ -1,345 +1,699 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Portfolio of Latesh Patil, Cloud & DevOps Engineer specializing in Linux, AWS, Kubernetes, and Infrastructure as Code.">
-  <meta name="keywords" content="Cloud Engineer, DevOps, Linux, AWS, Kubernetes, Terraform, Docker, CIS Benchmarks">
-  <meta name="author" content="Latesh Patil">
-  <title>Latesh Patil | Cloud & DevOps Engineer</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <style>
-    .active-nav { color: #3b82f6; border-bottom: 2px solid #3b82f6; }
-    .card-hover:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(59,130,246,0.15); transition: all 0.3s; }
-    .divider { height: 2px; background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%); opacity: 0.2; margin: 2rem 0; border-radius: 1rem; }
-    
-    /* Hover effects for links and buttons */
-    .nav-link {
-      position: relative;
-      transition: all 0.3s ease;
-    }
-    
-    .nav-link:hover {
-      color: #3b82f6;
-      transform: translateY(-2px);
-    }
-    
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      bottom: -4px;
-      left: 0;
-      background: linear-gradient(90deg, #3b82f6, #06b6d4);
-      transition: width 0.3s ease;
-    }
-    
-    .nav-link:hover::after {
-      width: 100%;
-    }
-    
-    /* Tooltip styles */
-    .tooltip {
-      position: relative;
-      cursor: pointer;
-    }
-    
-    .tooltip::before {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      white-space: nowrap;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      z-index: 1000;
-    }
-    
-    .tooltip::after {
-      content: '';
-      position: absolute;
-      bottom: 115%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 5px solid transparent;
-      border-top-color: rgba(0, 0, 0, 0.8);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .tooltip:hover::before,
-    .tooltip:hover::after {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    /* Animated background */
-    .animated-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-    }
-    
-    .particles {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .particle {
-      position: absolute;
-      background: linear-gradient(45deg, #3b82f6, #06b6d4);
-      border-radius: 50%;
-      opacity: 0.1;
-      animation: float 20s infinite linear;
-    }
-    
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 0;
-      }
-      10% {
-        opacity: 0.1;
-      }
-      90% {
-        opacity: 0.1;
-      }
-      100% {
-        transform: translateY(-100px) rotate(360deg);
-        opacity: 0;
-      }
-    }
-    
-    .hamburger {
-      display: none;
-      font-size: 2rem;
-      cursor: pointer;
-      background: none;
-      border: none;
-      outline: none;
-      color: #3b82f6;
-    }
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background: #fff;
-        position: absolute;
-        top: 64px;
-        left: 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        z-index: 1000;
-      }
-      .nav-links.active {
-        display: flex;
-      }
-      .hamburger {
-        display: block;
-      }
-      .card-hover, .p-6 {
-        width: 95% !important;
-        margin: 1rem auto !important;
-        padding: 1rem !important;
-      }
-      .container, .main-content {
-        padding: 1rem !important;
-      }
-      h1, h2, h3 {
-        font-size: 1.5rem !important;
-      }
-      body {
-        font-size: 1rem !important;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latesh Patil — DevOps &amp; Cloud Engineer</title>
+<meta name="description" content="Latesh Patil is a DevOps and Cloud Engineer at C-DAC Noida. Azure Solutions Architect Expert. Kubernetes, Terraform, Jenkins, ArgoCD, DevSecOps.">
+<meta name="author" content="Latesh Patil">
+<link rel="canonical" href="https://latesh98.github.io/Portfolio/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Latesh Patil — DevOps &amp; Cloud Engineer">
+<meta property="og:description" content="Kubernetes, Azure, Terraform and CI/CD. Azure Solutions Architect Expert.">
+<meta property="og:url" content="https://latesh98.github.io/Portfolio/">
+<meta property="og:image" content="https://latesh98.github.io/Portfolio/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%2314232A'/><text x='50' y='68' font-family='Helvetica,Arial' font-size='52' font-weight='700' fill='%23ECEFEE' text-anchor='middle'>LP</text></svg>">
+
+<style>
+:root{
+  --paper:#ECEFEE;
+  --surface:#FAFBFB;
+  --ink:#14232A;
+  --ink-2:#4E6168;
+  --rule:#CBD5D4;
+  --rule-soft:#DDE3E2;
+  --teal:#0B6E6E;
+  --teal-dim:#0B6E6E1A;
+  --amber:#B45B14;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --display:"Archivo",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --wrap:1060px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+}
+
+a{color:var(--teal);text-decoration:none;border-bottom:1px solid #0B6E6E4D;transition:border-color .15s,color .15s}
+a:hover{border-bottom-color:var(--teal)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+
+/* ---------- scroll rail ---------- */
+.rail{
+  position:fixed;left:34px;top:50%;transform:translateY(-50%);
+  z-index:20;display:none;
+}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:15px}
+.rail a{
+  display:flex;align-items:center;gap:11px;border:0;
+  color:var(--ink-2);font-size:12.5px;letter-spacing:.02em;
+}
+.rail .dot{
+  width:7px;height:7px;border-radius:50%;
+  background:transparent;border:1.5px solid var(--rule);
+  flex:none;transition:background .2s,border-color .2s,transform .2s;
+}
+.rail span.lbl{opacity:0;transform:translateX(-5px);transition:opacity .2s,transform .2s}
+.rail a:hover span.lbl,.rail a.on span.lbl{opacity:1;transform:none}
+.rail a:hover .dot{border-color:var(--ink-2)}
+.rail a.on .dot{background:var(--teal);border-color:var(--teal);transform:scale(1.25)}
+.rail a.on{color:var(--ink)}
+@media (min-width:1240px){.rail{display:block}}
+
+/* ---------- hero ---------- */
+header.hero{padding:72px 0 0}
+.eyebrow{
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-2);
+  display:flex;align-items:flex-start;gap:9px;margin:0 0 26px;
+}
+.pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--teal);flex:none;
+  margin-top:.5em;box-shadow:0 0 0 0 #0B6E6E66;animation:pulse 2.6s ease-out infinite;
+}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #0B6E6E59}70%{box-shadow:0 0 0 9px #0B6E6E00}100%{box-shadow:0 0 0 0 #0B6E6E00}}
+
+h1{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(2.6rem,7.4vw,4.5rem);
+  letter-spacing:-.032em;line-height:1.02;margin:0 0 20px;
+}
+.lede{
+  font-size:clamp(1.06rem,2.1vw,1.3rem);line-height:1.55;
+  max-width:33ch;margin:0 0 14px;font-weight:500;
+}
+.sub{color:var(--ink-2);max-width:58ch;margin:0 0 30px}
+
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:0}
+.hero-grid+.pipe-frame{margin-top:52px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 16px;border:1px solid var(--rule);border-radius:2px;
+  background:var(--surface);color:var(--ink);font-size:14.5px;font-weight:500;
+  transition:border-color .15s,background .15s;
+}
+.btn:hover{border-color:var(--ink);background:#fff}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.primary:hover{background:#0B171D}
+.btn svg{width:15px;height:15px;flex:none}
+
+/* ---------- hero portrait ---------- */
+.hero-grid{display:grid;grid-template-columns:1fr 300px;gap:14px 58px;align-items:start}
+@media (max-width:940px){.hero-grid{display:flex;flex-direction:column}}
+@media (max-width:940px){.hero-grid{gap:26px}}
+
+.portrait{margin:6px 0 0;max-width:300px}
+@media (max-width:940px){
+  .portrait{order:-1;max-width:152px;margin:0 0 2px}
+  .portrait figcaption{margin-top:7px}
+}
+.portrait img{
+  display:block;width:100%;height:auto;
+  border:1px solid var(--rule);border-radius:3px;
+  background:var(--surface);
+}
+.portrait figcaption{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+  margin-top:9px;line-height:1.45;
+}
+
+/* ---------- pipeline strip ---------- */
+.pipe-frame{
+  border:1px solid var(--rule);border-radius:3px;background:var(--surface);
+  padding:20px 22px 22px;margin-bottom:16px;
+}
+.pipe-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  font-family:var(--mono);font-size:12px;color:var(--ink-2);
+  padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--rule-soft);
+}
+.pipe-head b{color:var(--ink);font-weight:500}
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.stage{min-width:0}
+.bar{height:3px;background:var(--rule);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.bar i{display:block;height:100%;width:0;background:var(--teal);border-radius:2px}
+.run .bar i{animation:fill .5s ease-out forwards;animation-delay:var(--d)}
+@keyframes fill{to{width:100%}}
+.stage b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.stage span{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:780px){
+  .pipe{grid-template-columns:repeat(3,1fr);gap:14px 10px}
+  .pipe-head{flex-direction:column;gap:4px}
+  .pipe-frame{padding:17px 18px 19px}
+}
+@media (max-width:420px){.pipe{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- measures strip ---------- */
+.measures{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:3px;
+  overflow:hidden;margin-bottom:78px;
+}
+.measure{background:var(--surface);padding:15px 18px}
+.measure b{
+  display:block;font-family:var(--display);font-weight:600;font-size:1.42rem;
+  letter-spacing:-.02em;color:var(--amber);line-height:1.1;
+}
+.measure span{display:block;font-size:12.8px;color:var(--ink-2);margin-top:3px;line-height:1.35}
+@media (max-width:720px){.measures{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- sections ---------- */
+section{padding:62px 0;border-top:1px solid var(--rule)}
+.s-head{margin-bottom:36px}
+h2{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.5rem,3.4vw,2rem);letter-spacing:-.025em;
+  margin:0 0 7px;line-height:1.15;
+}
+.s-head p{color:var(--ink-2);margin:0;max-width:62ch;font-size:15.4px}
+
+/* ---------- experience ---------- */
+.role{
+  display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;
+  gap:6px 20px;padding-bottom:14px;border-bottom:1px solid var(--rule-soft);margin-bottom:30px;
+}
+.role h3{font-family:var(--display);font-weight:600;font-size:1.18rem;letter-spacing:-.02em;margin:0}
+.role .org{color:var(--ink-2);font-size:15px;margin:3px 0 0}
+.role .when{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+
+.themes{display:grid;grid-template-columns:repeat(2,1fr);gap:34px 44px}
+@media (max-width:800px){.themes{grid-template-columns:1fr;gap:30px}}
+.theme h4{
+  font-size:14.6px;font-weight:600;margin:0 0 11px;padding-left:13px;
+  border-left:2px solid var(--teal);line-height:1.3;
+}
+.theme ul{margin:0;padding:0 0 0 13px;list-style:none}
+.theme li{position:relative;padding-left:15px;margin-bottom:9px;font-size:15.2px;color:#243640}
+.theme li:last-child{margin-bottom:0}
+.theme li::before{
+  content:"";position:absolute;left:0;top:.62em;
+  width:5px;height:1.5px;background:var(--rule);
+}
+.theme li b{font-weight:600;color:var(--amber);font-family:var(--display);letter-spacing:-.01em}
+
+/* ---------- projects ---------- */
+.proj{padding:26px 0;border-top:1px solid var(--rule-soft)}
+.proj:first-of-type{border-top:0;padding-top:0}
+.proj-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;margin-bottom:6px}
+.proj h3{font-family:var(--display);font-weight:600;font-size:1.22rem;letter-spacing:-.022em;margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+  border:1px solid var(--rule);border-radius:2px;padding:2px 7px;background:var(--surface);
+}
+.proj>p{color:var(--ink-2);margin:0 0 16px;max-width:70ch;font-size:15.2px}
+.proj ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:10px 40px}
+@media (max-width:800px){.proj ul{grid-template-columns:1fr}}
+.proj li{position:relative;padding-left:15px;font-size:15.2px;color:#243640}
+.proj li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:1.5px;background:var(--rule)}
+.proj li b{font-weight:600;color:var(--amber);font-family:var(--display);letter-spacing:-.01em}
+
+.repo{margin:15px 0 0}
+.repo a{
+  font-family:var(--mono);font-size:12.3px;color:var(--ink-2);
+  border-bottom:1px solid var(--rule);
+}
+.repo a:hover{color:var(--teal);border-bottom-color:var(--teal)}
+
+/* ---------- articles ---------- */
+.articles-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:0 46px;
+  list-style:none;margin:0;padding:0;
+}
+@media (max-width:800px){.articles-grid{grid-template-columns:1fr}}
+.articles-grid li{border-top:1px solid var(--rule-soft)}
+.articles-grid li:nth-child(-n+2){border-top:0}
+@media (max-width:800px){.articles-grid li:nth-child(2){border-top:1px solid var(--rule-soft)}}
+.art-card{
+  display:block;border:0;padding:20px 0;color:inherit;height:100%;
+  text-decoration:none;
+}
+.art-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:11px;color:var(--ink-2);
+  margin-bottom:9px;
+}
+.art-badge svg{width:13px;height:13px;flex:none;opacity:.55}
+.art-title{
+  display:block;font-family:var(--display);font-weight:600;font-size:1.06rem;
+  letter-spacing:-.018em;line-height:1.3;margin-bottom:6px;transition:color .15s;
+}
+.art-card:hover .art-title{color:var(--teal)}
+.art-desc{display:block;color:var(--ink-2);font-size:14.8px;line-height:1.5;max-width:46ch}
+.art-meta{display:block;font-family:var(--mono);font-size:11.6px;color:var(--ink-2);margin-top:9px}
+.art-arrow{
+  display:inline-block;font-size:13px;color:var(--teal);margin-top:10px;
+  font-family:var(--mono);transition:transform .15s;
+}
+.art-card:hover .art-arrow{transform:translateX(3px)}
+.articles-footer{
+  margin-top:32px;padding-top:22px;border-top:1px solid var(--rule-soft);
+  display:flex;align-items:center;gap:12px;
+}
+.articles-footer a.btn{font-size:13.5px}
+
+/* ---------- stack ---------- */
+.stack{display:grid;gap:0}
+.row{
+  display:grid;grid-template-columns:250px 1fr;gap:8px 34px;
+  padding:15px 0;border-top:1px solid var(--rule-soft);align-items:start;
+}
+.row:first-child{border-top:0;padding-top:0}
+.row dt{font-weight:600;font-size:14.8px;letter-spacing:-.005em}
+.row dd{margin:0;color:#243640;font-size:15.1px}
+@media (max-width:760px){.row{grid-template-columns:1fr;gap:4px}}
+
+/* ---------- credentials ---------- */
+.cols{display:grid;grid-template-columns:1.15fr 1fr;gap:46px}
+@media (max-width:860px){.cols{grid-template-columns:1fr;gap:38px}}
+.card{
+  border:1px solid var(--rule);border-radius:3px;background:var(--surface);
+  padding:18px 20px;margin-bottom:12px;
+}
+.card.lead{border-left:2px solid var(--teal)}
+.card h4{font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:-.018em;margin:0 0 4px;line-height:1.3}
+.card .meta{color:var(--ink-2);font-size:14.2px;margin:0}
+.card .id{font-family:var(--mono);font-size:11.8px;color:var(--ink-2);margin:9px 0 0;word-break:break-all}
+.subhead{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:-.018em;margin:0 0 14px}
+.block{margin-bottom:26px}
+.block:last-child{margin-bottom:0}
+.edu{padding:12px 0;border-top:1px solid var(--rule-soft)}
+.edu:first-of-type{border-top:0;padding-top:0}
+.edu b{display:block;font-weight:600;font-size:15.2px;letter-spacing:-.005em}
+.edu span{color:var(--ink-2);font-size:14.2px}
+.edu .yr{font-family:var(--mono);font-size:12.3px;color:var(--ink-2)}
+.wins{margin:0;padding:0;list-style:none}
+.wins li{position:relative;padding-left:15px;margin-bottom:8px;font-size:15.1px;color:#243640}
+.wins li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:1.5px;background:var(--rule)}
+
+/* ---------- contact ---------- */
+#contact .lede{max-width:30ch}
+footer{
+  border-top:1px solid var(--rule);padding:22px 0 34px;
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;
+  font-family:var(--mono);font-size:12px;color:var(--ink-2);
+}
+footer a{border:0;color:var(--ink-2)}
+footer a:hover{color:var(--teal)}
+</style>
 </head>
-<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 smooth-scroll">
-  <!-- Animated Background -->
-  <div class="animated-bg">
-    <div class="particles" id="particles"></div>
-  </div>
-  <!-- Navbar -->
-  <nav class="sticky top-0 bg-white dark:bg-gray-800 shadow-md z-50 relative">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <a href="./index.html" class="flex items-center text-2xl font-bold">
-        <img src="https://avatars.githubusercontent.com/u/56338489?v=4" alt="Latesh Patil" class="w-10 h-10 rounded-full mr-2 border-2 border-blue-500"> Latesh Patil
+<body>
+
+<nav class="rail" aria-label="Section navigation">
+  <ol>
+    <li><a href="#top" class="on"><span class="dot"></span><span class="lbl">Top</span></a></li>
+    <li><a href="#work"><span class="dot"></span><span class="lbl">Work</span></a></li>
+    <li><a href="#projects"><span class="dot"></span><span class="lbl">Projects</span></a></li>
+    <li><a href="#articles"><span class="dot"></span><span class="lbl">Articles</span></a></li>
+    <li><a href="#stack"><span class="dot"></span><span class="lbl">Stack</span></a></li>
+    <li><a href="#credentials"><span class="dot"></span><span class="lbl">Credentials</span></a></li>
+    <li><a href="#contact"><span class="dot"></span><span class="lbl">Contact</span></a></li>
+  </ol>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow"><span class="pulse" aria-hidden="true"></span>Available for DevOps, Cloud and Platform roles</p>
+
+    <div class="hero-grid">
+    <div>
+    <h1>Latesh Patil</h1>
+    <p class="lede">I build the delivery path between a commit and production, and keep it boring.</p>
+    <p class="sub">DevOps &amp; Cloud Engineer at C-DAC Noida. I design Kubernetes platforms, write the Terraform and Jenkins that provision them, and wire in the scanning and monitoring that make releases safe to ship on a Friday. Microsoft Certified: Azure Solutions Architect Expert.</p>
+
+    <div class="links">
+      <a class="btn primary" href="mailto:patillatesh17@gmail.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+        patillatesh17@gmail.com
       </a>
-      <button class="hamburger" onclick="toggleMenu()">&#9776;</button>
-      <div class="nav-links space-x-4 flex items-center">
-        <a href="./index.html" class="nav-link tooltip active-nav" data-tooltip="Go to Home">Home</a>
-        <a href="./about.html" class="nav-link tooltip" data-tooltip="Learn About Me">About</a>
-        <a href="./projects.html" class="nav-link tooltip" data-tooltip="View My Projects">Projects</a>
-        <a href="./blog.html" class="nav-link tooltip" data-tooltip="Read My Blog">Blog</a>
+      <a class="btn" href="Latesh_Patil_Resume.pdf">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v13"/><path d="m7 12 5 5 5-5"/><path d="M4 21h16"/></svg>
+        Download résumé
+      </a>
+      <a class="btn" href="https://www.linkedin.com/in/latesh-patil-5b4560222" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/Latesh98" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    </div>
+
+    <figure class="portrait">
+      <img src="img/latesh.jpg" alt="Portrait of Latesh Patil" width="900" height="1125">
+      <figcaption>Pune, India — open to relocation</figcaption>
+    </figure>
+    </div>
+
+    <div class="pipe-frame">
+      <div class="pipe-head">
+        <span>The path I build and operate</span>
+        <span><b>git push</b> &nbsp;→&nbsp; running workload</span>
+      </div>
+      <div class="pipe" id="pipe">
+        <div class="stage" style="--d:0s">   <div class="bar"><i></i></div><b>Commit</b><span>GitHub, Git</span></div>
+        <div class="stage" style="--d:.18s"> <div class="bar"><i></i></div><b>Scan</b><span>Trivy, SonarQube</span></div>
+        <div class="stage" style="--d:.36s"> <div class="bar"><i></i></div><b>Build</b><span>Jenkins, Docker</span></div>
+        <div class="stage" style="--d:.54s"> <div class="bar"><i></i></div><b>Package</b><span>Helm, registry</span></div>
+        <div class="stage" style="--d:.72s"> <div class="bar"><i></i></div><b>Deploy</b><span>ArgoCD, AKS</span></div>
+        <div class="stage" style="--d:.90s"> <div class="bar"><i></i></div><b>Observe</b><span>Prometheus, ELK</span></div>
       </div>
     </div>
-  </nav>
 
-  <!-- Hero Section -->
-  <section class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-teal-500 dark:from-gray-800 dark:to-gray-900 relative">
-    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center">
-      <div class="md:w-1/2 text-center md:text-left">
-        <h1 class="text-5xl md:text-6xl font-extrabold mb-4 animate-pulse">Latesh Patil</h1>
-        <h2 class="text-2xl md:text-3xl mb-4 font-semibold text-blue-100 dark:text-blue-300">Cloud & DevOps</h2>
-        <p class="text-lg mb-6 max-w-lg mx-auto md:mx-0">I automate infrastructure, manage secure cloud environments, and build resilient DevOps pipelines.</p>
-        <!--  <span class="inline-block bg-green-500 text-white px-4 py-2 rounded-full mb-4 shadow">1 Year Experience</span>
-        <a href="mailto:patillatesh17@gmail.com" class="block text-blue-100 dark:text-blue-400 underline">latesh.cloud.devops@example.com</a> -->
+    <div class="measures">
+      <div class="measure"><b>~99.9%</b><span>uptime through HA Kubernetes</span></div>
+      <div class="measure"><b>25%</b><span>faster deployments after CI/CD rework</span></div>
+      <div class="measure"><b>20%</b><span>less infrastructure overhead post-migration</span></div>
+      <div class="measure"><b>~80%</b><span>smaller images with distroless builds</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="work">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>Work</h2>
+      <p>What I have been responsible for, grouped by the problem it solves rather than by the tool.</p>
+    </div>
+
+    <div class="role">
+      <div>
+        <h3>Project Engineer — DevOps Engineer</h3>
+        <p class="org">Centre for Development of Advanced Computing (C-DAC), Noida</p>
       </div>
-      <div class="md:w-1/2 mt-8 md:mt-0 flex justify-center">
-        <div class="w-64 h-64 rounded-full overflow-hidden border-8 border-white dark:border-gray-800 shadow-lg bg-white dark:bg-gray-800 flex items-center justify-center">
-          <img src="./Latesh Photo.jpg" alt="Latesh Patil" class="w-full h-full object-cover">
+      <p class="when">Apr 2025 — Present</p>
+    </div>
+
+    <div class="themes">
+      <div class="theme">
+        <h4>Pipelines and release automation</h4>
+        <ul>
+          <li>Built pipeline-as-code frameworks in Jenkins with modular shared libraries, standardising build and release across application teams and cutting deployment time by <b>25%</b>.</li>
+          <li>Automated VMware VM provisioning end to end through GitHub-triggered Jenkins pipelines calling Terraform, removing manual provisioning entirely.</li>
+          <li>Deployed Ansible AWX for centralised configuration management with templated jobs, scheduling and role-based access.</li>
+        </ul>
+      </div>
+
+      <div class="theme">
+        <h4>Kubernetes and cloud infrastructure</h4>
+        <ul>
+          <li>Migrated legacy Docker workloads onto Kubernetes using Rancher, standardising deployments and reducing infrastructure overhead by <b>20%</b>.</li>
+          <li>Provisioned Azure networking, DNS, compute and storage with Terraform modules that are repeatable and version controlled.</li>
+          <li>Moved delivery to GitOps with ArgoCD and Helm, so every release has a Git source of truth, automatic drift reconciliation and a clean rollback.</li>
+        </ul>
+      </div>
+
+      <div class="theme">
+        <h4>Reliability and observability</h4>
+        <ul>
+          <li>Ran a zero-downtime datacenter migration of servers and storage, holding <b>~99.9%</b> uptime on a highly available Kubernetes architecture.</li>
+          <li>Built the monitoring stack on Prometheus, Grafana and ELK with dashboards and alert rules tuned to catch issues before users report them.</li>
+          <li>Administered VMware vSphere — VM provisioning, datastore configuration and HA across on-premises environments.</li>
+        </ul>
+      </div>
+
+      <div class="theme">
+        <h4>Security and compliance</h4>
+        <ul>
+          <li>Embedded Trivy, SonarQube and OWASP dependency checks into CI/CD as quality gates, so vulnerabilities fail the build instead of reaching production.</li>
+          <li>Hardened RHEL and Ubuntu systems against CIS benchmarks and centralised logging with Rsyslog and NXLog for audit readiness.</li>
+          <li>Automated recurring operational work with Ansible, Python and Bash to reduce manual touchpoints and configuration drift.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>Projects</h2>
+      <p>Platform work I own day to day, and two earlier builds from before I moved into infrastructure.</p>
+    </div>
+
+    <article class="proj">
+      <div class="proj-top">
+        <h3>DataPulse — analytics pipeline modernisation</h3>
+        <div class="tags"><span class="tag">docker</span><span class="tag">jenkins</span><span class="tag">groovy</span><span class="tag">rust</span><span class="tag">java</span></div>
+      </div>
+      <p>Build times and image sizes were slowing every release. The fix was leaner images, reusable pipeline code and parallel execution.</p>
+      <ul>
+        <li>Multi-stage Docker builds for Rust and Java microservices on distroless bases — <b>~80%</b> image size reduction, with a much smaller attack surface.</li>
+        <li>Modular Jenkins shared libraries in Groovy — <b>~70%</b> less duplicated pipeline code and a reusable CI framework across services.</li>
+        <li>Parallel builds on distributed Jenkins agents running Docker-in-Docker, shortening build cycles under load.</li>
+        <li>Private registry governance with image versioning and automated cleanup policies to keep storage predictable.</li>
+      </ul>
+    </article>
+
+    <article class="proj">
+      <div class="proj-top">
+        <h3>Secure and scalable DevSecOps platform</h3>
+        <div class="tags"><span class="tag">kubernetes</span><span class="tag">prometheus</span><span class="tag">trivy</span><span class="tag">nessus</span><span class="tag">rhel</span></div>
+      </div>
+      <p>A delivery platform where security scanning and availability are part of the pipeline, not a review step bolted on at the end.</p>
+      <ul>
+        <li>Trivy, SonarQube and OWASP scans enforced as pipeline gates for continuous vulnerability detection and compliance evidence.</li>
+        <li>Prometheus, Grafana and ELK with custom dashboards and alerting to manage SLAs proactively.</li>
+        <li>Highly available Kubernetes using readiness and liveness probes, pod disruption budgets and node affinity — <b>~99.9%</b> uptime.</li>
+        <li>CIS Level 1 enforced on RHEL nodes, with Nessus vulnerability assessments to track exposure over time.</li>
+      </ul>
+      <p class="repo"><a href="https://github.com/Latesh98/DevOps-Project" target="_blank" rel="noopener">github.com/Latesh98/DevOps-Project</a></p>
+    </article>
+
+    <article class="proj">
+      <div class="proj-top">
+        <h3>Smart accessibility system for visually impaired users</h3>
+        <div class="tags"><span class="tag">computer-vision</span><span class="tag">spring-boot</span><span class="tag">java</span><span class="tag">tomcat</span></div>
+      </div>
+      <p>Final year engineering project. A real-time aid that describes a person&rsquo;s surroundings out loud so they can move through unfamiliar space on their own.</p>
+      <ul>
+        <li>Captures the scene from a live camera feed and identifies objects in frame using image processing and a trained model.</li>
+        <li>Converts detections into spoken descriptions, prioritised so the most relevant obstacle is announced first.</li>
+        <li>Served from a Java Spring Boot backend on Tomcat, with a lightweight browser front end for setup and testing.</li>
+        <li>Built and tuned for latency, since a description that arrives late is worse than none at all.</li>
+      </ul>
+      <p class="repo"><a href="https://github.com/Latesh98/Final_Year_Project" target="_blank" rel="noopener">github.com/Latesh98/Final_Year_Project</a></p>
+    </article>
+
+    <article class="proj">
+      <div class="proj-top">
+        <h3>NewsMonkey — React news reader</h3>
+        <div class="tags"><span class="tag">react</span><span class="tag">react-router</span><span class="tag">rest-api</span></div>
+      </div>
+      <p>A responsive news site that pulls live headlines from a public API. The project where I learned component state and routing properly.</p>
+      <ul>
+        <li>Live headlines fetched from a public news API with loading and error states handled rather than ignored.</li>
+        <li>Category browsing across business, sport, technology and entertainment.</li>
+        <li>Client-side routing with React Router so navigation never triggers a full reload.</li>
+        <li>Layout holds up from phone width to desktop without a separate mobile build.</li>
+      </ul>
+      <p class="repo"><a href="https://github.com/Latesh98/NewsMonkeyReact" target="_blank" rel="noopener">github.com/Latesh98/NewsMonkeyReact</a></p>
+    </article>
+  </div>
+</section>
+
+<section id="articles">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>Articles</h2>
+      <p>Long-form writing on infrastructure, DevOps, and the problems I work through in production, published on LinkedIn.</p>
+    </div>
+
+    <ul class="articles-grid">
+      <li>
+        <a class="art-card" href="https://www.linkedin.com/pulse/breaking-down-docker-run-nginx-latesh-patil" target="_blank" rel="noopener">
+          <span class="art-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Article
+          </span>
+          <span class="art-title">Breaking Down <code style="font-family:var(--mono);font-size:.88em;font-weight:500">docker run nginx</code></span>
+          <span class="art-desc">What actually happens between pressing enter and a container serving traffic — step by step through the Docker architecture.</span>
+          <span class="art-meta">Docker · Containers</span>
+          <span class="art-arrow">Read on LinkedIn →</span>
+        </a>
+      </li>
+      <li>
+        <a class="art-card" href="https://www.linkedin.com/pulse/ingress-gateway-api-traefik-whats-actually-happening-under-patil-xry7f/" target="_blank" rel="noopener">
+          <span class="art-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Article
+          </span>
+          <span class="art-title">Ingress, Gateway API, and Traefik: What's Actually Happening Under the Hood</span>
+          <span class="art-desc">Every Kubernetes engineer writes an Ingress or Gateway YAML at some point, applies it, and hopes it works. This goes into what actually happens underneath.</span>
+          <span class="art-meta">Kubernetes · Networking · Traefik</span>
+          <span class="art-arrow">Read on LinkedIn →</span>
+        </a>
+      </li>
+      <li>
+        <a class="art-card" href="https://www.linkedin.com/pulse/kubernetes-dns-networking-deep-dive-how-traffic-actually-latesh-patil-1f86c/" target="_blank" rel="noopener">
+          <span class="art-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Article
+          </span>
+          <span class="art-title">Kubernetes DNS &amp; Networking Deep Dive: How Traffic Actually Flows</span>
+          <span class="art-desc">Most engineers know the surface-level story of Kubernetes networking. This goes deeper — DNS resolution, kube-proxy, pod-to-pod routing, and where things break.</span>
+          <span class="art-meta">Kubernetes · DNS · Networking</span>
+          <span class="art-arrow">Read on LinkedIn →</span>
+        </a>
+      </li>
+      <li>
+        <a class="art-card" href="https://www.linkedin.com/pulse/kubernetes-rbac-deep-dive-latesh-patil-c7o3c/" target="_blank" rel="noopener">
+          <span class="art-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn Article
+          </span>
+          <span class="art-title">Kubernetes RBAC Deep Dive</span>
+          <span class="art-desc">RBAC in Kubernetes is more than just setting roles — it is the difference between a secure cluster and one where any pod can do anything. A practical walkthrough of how it actually works.</span>
+          <span class="art-meta">Kubernetes · RBAC · Security</span>
+          <span class="art-arrow">Read on LinkedIn →</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="articles-footer">
+      <a class="btn" href="https://www.linkedin.com/in/latesh-patil-5b4560222/recent-activity/articles/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View all articles on LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>Stack</h2>
+      <p>Tools I have used in production or in work that shipped, not a list of things I have read about.</p>
+    </div>
+
+    <dl class="stack">
+      <div class="row"><dt>Cloud platforms</dt><dd>Microsoft Azure — AKS, ACR, Application Gateway, Virtual Networks, Virtual Machines, VM Scale Sets, Storage Accounts, Azure Monitor. AWS at a foundational level.</dd></div>
+      <div class="row"><dt>CI/CD</dt><dd>Jenkins (pipeline-as-code, shared libraries, distributed agents), Azure DevOps (YAML and classic pipelines, Repos, deployment groups), GitHub Actions, Git branching and PR workflows.</dd></div>
+      <div class="row"><dt>Containers and orchestration</dt><dd>Docker, Docker Compose, Kubernetes, AKS, Rancher, Helm, ArgoCD, container registries.</dd></div>
+      <div class="row"><dt>Infrastructure as code</dt><dd>Terraform, Ansible, Ansible AWX, Bash, Python, Groovy, YAML.</dd></div>
+      <div class="row"><dt>Observability</dt><dd>Prometheus, Grafana, Elasticsearch, Logstash, Kibana, Rsyslog, NXLog.</dd></div>
+      <div class="row"><dt>Security</dt><dd>Trivy, SonarQube, OWASP Dependency-Check, CIS benchmarks, Nessus, RBAC, secrets management.</dd></div>
+      <div class="row"><dt>Systems and virtualisation</dt><dd>Linux (RHEL, Ubuntu), Windows Server, VMware vSphere, ESXi, vCenter, NSX.</dd></div>
+      <div class="row"><dt>Networking and data</dt><dd>DNS, virtual networking, load balancing, reverse proxies, MySQL, PostgreSQL.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="credentials">
+  <div class="wrap">
+    <div class="s-head">
+      <h2>Credentials</h2>
+      <p>Certifications, education and a few competitive results.</p>
+    </div>
+
+    <div class="cols">
+      <div>
+        <div class="card lead">
+          <h4>Microsoft Certified: Azure Solutions Architect Expert</h4>
+          <p class="meta">AZ-104 and AZ-305 · Earned September 2026</p>
+          <p class="id">Credential ID 18B1A38D67EBD023<br>Certification number 808296-370Q79</p>
+        </div>
+        <div class="card">
+          <h4>Microsoft Certified: Azure Fundamentals</h4>
+          <p class="meta">AZ-900</p>
+          <p class="id">Credential ID B0291B55808A472A</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="block">
+          <h3 class="subhead">Education</h3>
+          <div class="edu">
+            <b>PG Diploma in Advanced Computing (PG-DITISS)</b>
+            <span>Sunbeam Institute of Information Technology, Pune</span> · <span class="yr">2025</span>
+          </div>
+          <div class="edu">
+            <b>B.E. Computer Engineering</b>
+            <span>SVIT Nashik, Savitribai Phule Pune University</span> · <span class="yr">2024</span>
+          </div>
+        </div>
+
+        <div class="block">
+          <h3 class="subhead">Results</h3>
+          <ul class="wins">
+            <li>Winner, Sunbeam Institute Hackathon, and top 10 academic performer in the 2025 PG-DITISS cohort.</li>
+            <li>Gold badge in Problem Solving on HackerRank.</li>
+            <li>First place, college coding competition, SVIT Nashik.</li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white dark:from-gray-900 to-transparent"></div>
-  </section>
+  </div>
+</section>
 
-  <div class="divider"></div>
-
-  <!-- What Do I Help With Section -->
-  <section class="py-16 bg-white dark:bg-gray-800">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-12">What Do I Help With?</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover linux-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">🐧 Linux Administration</h3>
-          <p> Hands on system management, scripting, and hardening with SELinux, SystemD, and Bash.</p>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">☁️ Cloud (AWS, Azure)</h3>
-          <p>Design and manage scalable, secure cloud architectures across major providers.</p>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">🔧 CI/CD</h3>
-          <p>Build automated pipelines with Jenkins, GitHub Actions, and ArgoCD.</p>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">🧰 Infra as Code</h3>
-          <p>Automate infrastructure with Terraform, Ansible, and CloudFormation.</p>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">🌐 Networking</h3>
-          <p>Configure VPCs, DNS, NAT, routing, and load balancers for robust connectivity.</p>
-        </div>
-        <div class="p-6 bg-gray-100 dark:bg-gray-700 rounded-xl card-hover shadow">
-          <h3 class="text-xl font-semibold mb-2">🔐 Security & Compliance</h3>
-          <p>Implement IAM, CIS Benchmarks, and firewall hardening for secure systems.</p>
-        </div>
-      </div>
+<section id="contact">
+  <div class="wrap">
+    <h2>Get in touch</h2>
+    <p class="lede" style="margin-top:10px">Open to DevOps, Cloud, Platform and SRE roles.</p>
+    <p class="sub">Based in Pune, open to relocation. The quickest way to reach me is email — I reply within a day.</p>
+    <div class="links" style="margin-bottom:0">
+      <a class="btn primary" href="mailto:patillatesh17@gmail.com">patillatesh17@gmail.com</a>
+      <a class="btn" href="tel:+918459780257">+91 84597 80257</a>
+      <a class="btn" href="https://www.linkedin.com/in/latesh-patil-5b4560222" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="https://github.com/Latesh98" target="_blank" rel="noopener">GitHub</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <div class="divider"></div>
+</main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white py-8">
-    <div class="container mx-auto px-4 text-center">
-      <p>© 2025 Latesh Patil | <a href="mailto:patillatesh17@gmail.com" class="underline">patillatesh17@gmail.com</a></p>
-      <div class="mt-4 flex justify-center space-x-6">
-        <a href="https://github.com/Latesh98" class="tooltip hover:text-blue-400 transition-all duration-300 hover:scale-110" data-tooltip="Visit My GitHub" aria-label="GitHub"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 2.92-.39c.99.01 1.99.13 2.92.39 2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.67.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/></svg></a>
-        <a href="https://www.linkedin.com/in/latesh-patil-5b4560222" class="tooltip hover:text-blue-400 transition-all duration-300 hover:scale-110" data-tooltip="Connect on LinkedIn" aria-label="LinkedIn"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.89v1.23h.04c.4-.75 1.37-1.54 2.82-1.54 3.01 0 3.57 1.98 3.57 4.56v4.75z"/></svg></a>
-        <a href="mailto:patillatesh17@gmail.com" class="tooltip hover:text-blue-400 transition-all duration-300 hover:scale-110" data-tooltip="Send Email" aria-label="Email"><svg class="inline w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 13.065l-8.447-6.723a.75.75 0 0 1 .947-1.184l8.5 6.77 8.5-6.77a.75.75 0 1 1 .947 1.184L12 13.065z"/><path d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75a.75.75 0 0 1 1.5 0v10.5c0 .414.336.75.75.75h15a.75.75 0 0 0 .75-.75V6.75a.75.75 0 0 1 1.5 0z"/></svg></a>
-      </div>
-    </div>
-  </footer>
+<footer>
+  <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;width:100%">
+    <span>Latesh Patil — Pune, India</span>
+    <span>Built as a static page, served by GitHub Pages</span>
+  </div>
+</footer>
 
-  <script>
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-    const navLinks = document.querySelectorAll('nav a');
-    navLinks.forEach(link => {
-      if (link.href === window.location.href) {
-        link.classList.add('active-nav');
-      }
-    });
-    // Hamburger menu toggle
-    function toggleMenu() {
-      document.querySelector('.nav-links').classList.toggle('active');
-    }
-    
-    // Animated background particles
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 20;
-      
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        // Random size between 2px and 8px
-        const size = Math.random() * 6 + 2;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        
-        // Random starting position
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
-        
-        particlesContainer.appendChild(particle);
-      }
-    }
-    
-    // Initialize particles when page loads
-    document.addEventListener('DOMContentLoaded', createParticles);
-  </script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pipe = document.getElementById('pipe');
+  if (pipe && !reduce) {
+    requestAnimationFrame(function(){ pipe.classList.add('run'); });
+  } else if (pipe) {
+    pipe.querySelectorAll('.bar i').forEach(function(el){ el.style.width = '100%'; });
+  }
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+
+  if ('IntersectionObserver' in window) {
+    var seen = new Map();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ seen.set(e.target, e.intersectionRatio); });
+      var best = null, bestRatio = 0;
+      seen.forEach(function(ratio, el){ if (ratio > bestRatio) { bestRatio = ratio; best = el; } });
+      if (!best) return;
+      links.forEach(function(a, i){ a.classList.toggle('on', targets[i] === best); });
+    }, { threshold: [0, .12, .3, .55, .8] });
+    targets.forEach(function(t){ if (t) io.observe(t); });
+  }
+})();
+</script>
+
 </body>
 </html>
